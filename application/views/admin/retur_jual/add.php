@@ -227,6 +227,18 @@
 <script type="text/javascript" src="<?=base_url('backend/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js');?>"></script>
 <script type="text/javascript" src="<?=base_url('backend/assets/global/plugins/jquery-validation/js/jquery.validate.min.js');?>"></script>
 <script type="text/javascript">
+$(document).ready(function() {
+    $('#formDataBarang').on('shown.bs.modal', function () {
+       var table = $('#tableDataBarang').DataTable();
+       table.columns.adjust();
+    });
+
+    $('#formCariPelanggan').on('shown.bs.modal', function () {
+       var table = $('#tableDataPelanggan').DataTable();
+       table.columns.adjust();
+    });
+});
+
 var statusinput;
 statusinput = 'Tambah';
 
@@ -848,93 +860,47 @@ function simpanTransaksi() {
                 });
                 
                 // Cari Data by ID Retur Penjualan Baru untuk Cetak Nota
-                // var retur_jual_id = data.id;
-                // for(var x = 0; x <= 2; x++) {
-                //     console.log(x);
-                //     if (x < 2) {
-                //         $.ajax({
-                //             url: '<?=site_url('admin/retur_jual/get_data/');?>'+retur_jual_id,
-                //             type: "POST",
-                //             dataType: 'JSON',
-                //             success: function(datap) {
-                //                 var locale        = 'en';
-                //                 var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                //                 var formatter     = new Intl.NumberFormat(locale, options);
-                //                 var NoOrder       = datap.retur_jual_no;
-                //                 var Tanggal       = datap.retur_jual_tanggal;
-                //                 var Jam           = datap.retur_jual_jam;
-                //                 var NamaPelanggan = datap.pelanggan_nama;
-                //                 var Kasir         = datap.user_username;
-                //                 var Meja          = datap.meja_nama;
-                //                 Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                //                 // Detail Item
-                //                 $.ajax({
-                //                     url: '<?=site_url('admin/retur_jual/get_list_item/');?>'+retur_jual_id,
-                //                     type: "POST",
-                //                     dataType: 'JSON',
-                //                     success: function(dataitem) {
-                //                         if (dataitem != null) {
-                //                             var x = dataitem.length;
-                //                             for(var i = 0; i < x; i++) {
-                //                                 var NamaBarang = dataitem[i].retur_jual_detail_nama;
-                //                                 var Harga      = formatter.format(dataitem[i].retur_jual_detail_harga);
-                //                                 var Qty        = formatter.format(dataitem[i].retur_jual_detail_qty);
-                //                                 var Subtotal   = formatter.format(dataitem[i].retur_jual_detail_subtotal);
-                //                                 // console.log(NamaBarang, Harga, Qty, Subtotal);
-                //                                 ListItem(NamaBarang, Harga, Qty, Subtotal);
-                //                             }
+                var retur_jual_id = data.id;
+                $.ajax({
+                    url: '<?=site_url('admin/retur_jual/get_data/');?>'+retur_jual_id,
+                    type: "POST",
+                    dataType: 'JSON',
+                    success: function(datap) {
+                        var locale        = 'en';
+                        var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                        var formatter     = new Intl.NumberFormat(locale, options);
+                        var NoOrder       = datap.retur_jual_no;
+                        var Tanggal       = datap.retur_jual_tanggal;
+                        var Jam           = datap.retur_jual_jam;
+                        var NamaPelanggan = datap.pelanggan_nama;
+                        var Kasir         = datap.user_username;
+                        var Meja          = datap.meja_nama;
+                        Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+                        $.ajax({
+                            url: '<?=site_url('admin/retur_jual/get_list_item/');?>'+retur_jual_id,
+                            type: "POST",
+                            dataType: 'JSON',
+                            success: function(dataitem) {
+                                if (dataitem != null) {
+                                    var x = dataitem.length;
+                                    for(var i = 0; i < x; i++) {
+                                        var NamaBarang = dataitem[i].retur_jual_detail_nama;
+                                        var Harga      = formatter.format(dataitem[i].retur_jual_detail_harga);
+                                        var Qty        = formatter.format(dataitem[i].retur_jual_detail_qty);
+                                        var Subtotal   = formatter.format(dataitem[i].retur_jual_detail_subtotal);
+                                        ListItem(NamaBarang, Harga, Qty, Subtotal);
+                                    }
 
-                //                             var TipeBayar  = datap.tipe_nama;
-                //                             var SubTotal   = formatter.format(datap.retur_jual_subtotal);
-                //                             var Diskon     = formatter.format(datap.retur_jual_diskon);
-                //                             var DiskonPOIN = formatter.format(datap.retur_jual_tukar_poin_rp);
-                //                             var PPN        = formatter.format(datap.retur_jual_ppn);
-                //                             var Total      = formatter.format(datap.retur_jual_total);
-                //                             // console.log(SubTotal, Diskon, DiskonPOIN, Total);
-                //                             Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
-                //                             FooterEnd();
-                //                         }
-                //                     }
-                //                 });
-                //             }
-                //         });
-                //     } else {
-                //         $.ajax({
-                //             url: '<?=site_url('admin/retur_jual/get_data/');?>'+retur_jual_id,
-                //             type: "POST",
-                //             dataType: 'JSON',
-                //             success: function(datap) {
-                //                 var locale        = 'en';
-                //                 var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                //                 var formatter     = new Intl.NumberFormat(locale, options);
-                //                 var NoOrder       = datap.retur_jual_no;
-                //                 var Tanggal       = datap.retur_jual_tanggal;
-                //                 var Jam           = datap.retur_jual_jam;
-                //                 var NamaPelanggan = datap.pelanggan_nama;
-                //                 var Kasir         = datap.user_username;
-                //                 var Meja          = datap.meja_nama;
-                //                 Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                //                 $.ajax({
-                //                     url: '<?=site_url('admin/retur_jual/get_list_item/');?>'+retur_jual_id,
-                //                     type: "POST",
-                //                     dataType: 'JSON',
-                //                     success: function(dataitem) {
-                //                         if (dataitem != null) {
-                //                             var x = dataitem.length;
-                //                             for(var i = 0; i < x; i++) {
-                //                                 var NamaBarang = dataitem[i].retur_jual_detail_nama;
-                //                                 var Qty        = formatter.format(dataitem[i].retur_jual_detail_qty);
-                //                                 var Keterangan = dataitem[i].retur_jual_detail_keterangan;
-                //                                 ListItemChecker(NamaBarang, Qty, Keterangan);
-                //                             }
-                //                             FooterChecker();
-                //                         }
-                //                     }
-                //                 });
-                //             }
-                //         });
-                //     }
-                // }
+                                    var TipeBayar  = datap.tipe_nama;
+                                    var SubTotal   = formatter.format(datap.retur_jual_subtotal);
+                                    var Total      = formatter.format(datap.retur_jual_total);
+                                    Footer(TipeBayar, SubTotal, Total);
+                                    FooterEnd();
+                                }
+                            }
+                        });
+                    }
+                });
             } else {
                 console.log('ID Kosong');
             }
@@ -959,7 +925,7 @@ function simpanTransaksi() {
     return false;
 }
 
-function Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir) {
+function Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja) {
     var LimitChar = 20;
     var NamaToko  = '<?=$Toko->contact_name;?>';
     var Alamat    = '<?=$Toko->contact_address;?>';
@@ -996,17 +962,18 @@ function Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir) {
     }
 
     printer.open().then(function () {
-      printer.align('center')
-        .text('<?=base_url('img/logo-bs.jpeg');?>') 
-        .bold(false)
-        .text('================================')
+      printer.align('left')
+        .bold(true)
+        .text('     BLACKSTONE STREETLOUNGE    ')
         .text('             RUKO UMK           ')
+        .bold(false)
+        .text('--------------------------------')
         .print()
     })
 
     printer.open().then(function () {
       printer.align('left')
-        .text('No  Order : '+txtNoOrder)
+        .text('No. Retur : '+txtNoOrder)
         .text('Tanggal   : '+Tanggal+" "+Jam)
         .text('Pelanggan : '+txtNamaPelanggan)
         .text('Kasir     : '+Kasir)
@@ -1050,7 +1017,6 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
         txtSubtotal = Subtotal.substring(0, limitSubtotal);
     }
 
-    // var printer = new Recta('2785262214', '1811')
     printer.open().then(function () {
       printer.align('left')
         .text(txtBarang+" "+txtHarga+" "+txtQty+""+txtSubtotal)
@@ -1058,7 +1024,7 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
     })
 }
 
-function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
+function Footer(TipeBayar, SubTotal, Total) {
     var limitNominal    = 9;
     var txtSubTotal     = 0;
     var txtDiskon       = 0;
@@ -1070,24 +1036,6 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         txtSubTotal = SubTotal.padStart(limitNominal, ' ')
     } else {
         txtSubTotal = SubTotal.substring(0, limitNominal);
-    }
-
-    if (Diskon.length <= limitNominal) {
-        txtDiskon = Diskon.padStart(limitNominal, ' ')
-    } else {
-        txtDiskon = Diskon.substring(0, limitNominal);
-    }
-
-    if (DiskonPOIN.length <= limitNominal) {
-        txtDiskonPOIN = DiskonPOIN.padStart(limitNominal, ' ')
-    } else {
-        txtDiskonPOIN = DiskonPOIN.substring(0, limitNominal);
-    }
-
-    if (PPN.length <= limitNominal) {
-        txtPPN = PPN.padStart(limitNominal, ' ')
-    } else {
-        txtPPN = PPN.substring(0, limitNominal);
     }
 
     if (Total.length <= limitNominal) {
@@ -1103,30 +1051,6 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         .print()
     })
 
-    if (txtDiskon === '') {
-        printer.open().then(function () {
-            printer.align('left')
-            .text("              Diskon : "+txtDiskon)
-            .print()
-        })
-    }
-
-    if (txtDiskonPOIN === '') {
-        printer.open().then(function () {
-            printer.align('left')
-            .text("         Diskon POIN : "+txtDiskonPOIN)
-            .print()
-        })
-    }
-
-    if (txtPPN === '') {
-        printer.open().then(function () {
-        printer.align('left')
-            .text("             PPN (%) : "+txtPPN)
-            .print()
-        })
-    }
-
     printer.open().then(function () {
         printer.align('left')
         .text("               TOTAL : "+txtTotal)
@@ -1138,50 +1062,7 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
 function FooterEnd() {
     printer.open().then(function () {
         printer.align('left')
-        .text('<?=$dataMeta->meta_footer;?>')
-        .feed(5)
-        .cut()
-        .print()
-    })
-}
-
-function ListItemChecker(NamaBarang, Qty, Keterangan) {
-    var limitNamaBarang = 11;
-    var limitQty        = 3;
-    var limitKeterangan = 16;
-    var txtBarang       = '';
-    var txtQty          = 0;
-    var txtKeterangan   = '';
-
-    if(NamaBarang.length <= limitNamaBarang) {
-        txtBarang = NamaBarang.padEnd(limitNamaBarang, ' ')
-    } else {
-        txtBarang = NamaBarang.substring(0, limitNamaBarang);
-    }
-
-    if (Qty.length <= limitQty) {
-        txtQty = Qty.padStart(limitQty, ' ')
-    } else {
-        txtQty = Qty.substring(0, limitQty);
-    }
-
-    if(Keterangan.length <= limitKeterangan) {
-        txtKeterangan = Keterangan.padEnd(limitKeterangan, ' ')
-    } else {
-        txtKeterangan = Keterangan.substring(0, limitKeterangan);
-    }
-
-    printer.open().then(function () {
-      printer.align('left')
-        .text(txtBarang+" "+txtQty+" "+txtKeterangan)
-        .print()
-    })
-}
-
-function FooterChecker() {
-    printer.open().then(function () {
-        printer.align('left')
-        .feed(5)
+        .feed(3)
         .cut()
         .print()
     })
@@ -1230,8 +1111,8 @@ function FooterChecker() {
                             <th width="5%"></th>
                             <th width="5%">No</th>
                             <th width="10%">Nomor</th>
-                            <th width="15%">Nama Pelanggan</th>
-                            <th>Alamat</th>
+                            <th width="25%">Nama Pelanggan</th>
+                            <th width="30%">Alamat</th>
                             <th width="15%">Kota</th>
                             <th width="10%">No. Telp</th>
                         </tr>

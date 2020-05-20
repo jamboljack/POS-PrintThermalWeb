@@ -760,14 +760,14 @@ if ($uri == 'home') {
                     <i class="fa fa-sign-out"></i><span class="title"> Stok Keluar</span>
                 </a>
             </li>
-            <li class="heading">
+            <!-- <li class="heading">
                 <h3 class="uppercase">MENU UTILITY</h3>
             </li>
             <li class="tooltips <?=$printer;?>" data-container="body" data-placement="right" data-html="true" data-original-title="Printer">
                 <a href="<?=site_url('admin/printer');?>">
                     <i class="icon-printer"></i><span class="title"> Setting Printer</span>
                 </a>
-            </li>
+            </li> -->
             <?php if ($this->session->userdata('level') == 'Admin') {?>
             <li class="heading">
                 <h3 class="uppercase">MENU USERS</h3>

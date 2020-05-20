@@ -227,6 +227,18 @@
 <script type="text/javascript" src="<?=base_url('backend/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js');?>"></script>
 <script type="text/javascript" src="<?=base_url('backend/assets/global/plugins/jquery-validation/js/jquery.validate.min.js');?>"></script>
 <script type="text/javascript">
+$(document).ready(function() {
+    $('#formDataBarang').on('shown.bs.modal', function () {
+       var table = $('#tableDataBarang').DataTable();
+       table.columns.adjust();
+    });
+
+    $('#formCariPelanggan').on('shown.bs.modal', function () {
+       var table = $('#tableDataPelanggan').DataTable();
+       table.columns.adjust();
+    });
+});
+
 var statusinput;
 statusinput = 'Tambah';
 
@@ -981,8 +993,6 @@ function simpanTransaksi() {
                     
                     // Cari Data by ID Penjualan Baru untuk Cetak Nota
                     var penjualan_id = data.id;
-                    // for(var ulang = 0; ulang <= 2; ulang++) {
-                    //     if (ulang < 2) {
                     $.ajax({
                         url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
                         type: "POST",
@@ -1108,89 +1118,6 @@ function simpanTransaksi() {
                             });
                         }
                     });
-
-                    // $.ajax({
-                    //     url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
-                    //     type: "POST",
-                    //     dataType: 'JSON',
-                    //     success: function(datap2) {
-                    //         var locale        = 'en';
-                    //         var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                    //         var formatter     = new Intl.NumberFormat(locale, options);
-                    //         var NoOrder       = datap2.penjualan_no;
-                    //         var Tanggal       = datap2.penjualan_tanggal;
-                    //         var Jam           = datap2.penjualan_jam;
-                    //         var NamaPelanggan = datap2.pelanggan_nama;
-                    //         var Kasir         = datap2.user_username;
-                    //         var Meja          = datap2.meja_nama;
-                    //         Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                    //         // Detail Item
-                    //         $.ajax({
-                    //             url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
-                    //             type: "POST",
-                    //             dataType: 'JSON',
-                    //             success: function(dataitem2) {
-                    //                 if (dataitem2 != null) {
-                    //                     var x2 = dataitem2.length;
-                    //                     for(var i = 0; i < x2; i++) {
-                    //                         console.log(dataitem2[i].penjualan_detail_nama);
-                    //                         var NamaBarang = dataitem2[i].penjualan_detail_nama;
-                    //                         var Harga      = formatter.format(dataitem2[i].penjualan_detail_harga);
-                    //                         var Qty        = formatter.format(dataitem2[i].penjualan_detail_qty);
-                    //                         var Subtotal   = formatter.format(dataitem2[i].penjualan_detail_subtotal);
-                    //                         ListItem(NamaBarang, Harga, Qty, Subtotal);
-                    //                     }
-                    //                 }
-
-                    //                 var TipeBayar  = datap2.tipe_nama;
-                    //                 var SubTotal   = formatter.format(datap2.penjualan_subtotal);
-                    //                 var Diskon     = formatter.format(datap2.penjualan_diskon);
-                    //                 var DiskonPOIN = formatter.format(datap2.penjualan_tukar_poin_rp);
-                    //                 var PPN        = formatter.format(datap2.penjualan_ppn);
-                    //                 var Total      = formatter.format(datap2.penjualan_total);
-                    //                 Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
-                    //                 FooterEnd();
-                    //             }
-                    //         });
-                    //     }
-                    // });
-                        // } else {
-                        //     $.ajax({
-                        //         url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
-                        //         type: "POST",
-                        //         dataType: 'JSON',
-                        //         success: function(datap) {
-                        //             var locale        = 'en';
-                        //             var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                        //             var formatter     = new Intl.NumberFormat(locale, options);
-                        //             var NoOrder       = datap.penjualan_no;
-                        //             var Tanggal       = datap.penjualan_tanggal;
-                        //             var Jam           = datap.penjualan_jam;
-                        //             var NamaPelanggan = datap.pelanggan_nama;
-                        //             var Kasir         = datap.user_username;
-                        //             var Meja          = datap.meja_nama;
-                        //             Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                        //             $.ajax({
-                        //                 url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
-                        //                 type: "POST",
-                        //                 dataType: 'JSON',
-                        //                 success: function(dataitem) {
-                        //                     if (dataitem != null) {
-                        //                         var x = dataitem.length;
-                        //                         for(var i = 0; i < x; i++) {
-                        //                             var NamaBarang = dataitem[i].penjualan_detail_nama;
-                        //                             var Qty        = formatter.format(dataitem[i].penjualan_detail_qty);
-                        //                             var Keterangan = dataitem[i].penjualan_detail_keterangan;
-                        //                             ListItemChecker(NamaBarang, Qty, Keterangan);
-                        //                         }
-                        //                         FooterChecker();
-                        //                     }
-                        //                 }
-                        //             });
-                        //         }
-                        //     });
-                        // }
-                    // }
                 } else {
                     console.log('ID Kosong');
                 }
@@ -1396,7 +1323,7 @@ function FooterEnd() {
     printer.open().then(function () {
         printer.align('left')
         .text('<?=$dataMeta->meta_footer;?>')
-        .feed(5)
+        .feed(3)
         .cut()
         .print()
     })
@@ -1487,8 +1414,8 @@ function FooterChecker() {
                             <th width="5%"></th>
                             <th width="5%">No</th>
                             <th width="10%">Nomor</th>
-                            <th width="15%">Nama Pelanggan</th>
-                            <th>Alamat</th>
+                            <th width="25%">Nama Pelanggan</th>
+                            <th width="30%">Alamat</th>
                             <th width="15%">Kota</th>
                             <th width="10%">No. Telp</th>
                         </tr>

@@ -184,6 +184,13 @@
 <script type="text/javascript" src="<?=base_url();?>backend/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
 <script type="text/javascript" src="<?=base_url();?>backend/assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
 <script type="text/javascript">
+$(document).ready(function() {
+    $('#formDataBarang').on('shown.bs.modal', function () {
+       var table = $('#tableDataBarang').DataTable();
+       table.columns.adjust();
+    });
+});
+
 var statusinput;
 statusinput = 'Tambah';
 
