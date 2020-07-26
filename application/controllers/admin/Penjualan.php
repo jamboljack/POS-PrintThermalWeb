@@ -14,6 +14,7 @@ class Penjualan extends MY_Controller
 
     public function index()
     {
+        $data['dataMeta']      = $this->db->get_where('vivo_meta', array('meta_id' => 1))->row();
         $data['Toko']          = $this->db->get_where('vivo_contact', array('contact_id' => 1))->row();
         $data['listPelanggan'] = $this->db->order_by('pelanggan_nama', 'asc')->get('vivo_pelanggan')->result();
         $data['listTipe']      = $this->db->order_by('tipe_nama', 'asc')->get('vivo_tipe')->result();
@@ -33,7 +34,8 @@ class Penjualan extends MY_Controller
             $penjualan_id = $r->penjualan_id;
             $link         = site_url('admin/penjualan/detail/' . $penjualan_id);
             $row[]        = '<a href="' . $link . '" title="Detail Data"><i class="icon-pencil"></i></a>
-                             <a onclick="printNota(' . $penjualan_id . ')" title="Print Nota"><i class="icon-printer"></i></a>';
+                             <a onclick="printNota(' . $penjualan_id . ')" title="Print Nota"><i class="icon-screen-tablet"></i></a>
+                             <a onclick="printFaktur(' . $penjualan_id . ')" title="Print Nota"><i class="icon-printer"></i></a>';
             $row[]  = $no;
             $row[]  = $r->penjualan_no;
             $row[]  = date('d-m-Y', strtotime($r->penjualan_tanggal)) . ' ' . date('H:i', strtotime($r->penjualan_jam));
@@ -98,6 +100,12 @@ class Penjualan extends MY_Controller
     public function get_data_pelanggan($id)
     {
         $data = $this->db->get_where('vivo_pelanggan', array('pelanggan_id' => $id))->row();
+        echo json_encode($data);
+    }
+
+    public function get_data_barang_by_kode($kode_barang)
+    {
+        $data = $this->db->get_where('v_barang', array('barang_kode' => trim(strtoupper($kode_barang))))->row();
         echo json_encode($data);
     }
 

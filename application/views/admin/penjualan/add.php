@@ -59,15 +59,17 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Nama Pelanggan</label>
-                                            <div class="col-md-8">
-                                                <div class="input-icon right">
-                                                    <i class="fa"></i>
-                                                    <input type="text" class="form-control" name="nama_pelanggan" id="nama_pelanggan" autocomplete="off" placeholder="Cari Nama Pelanggan" value="<?=$detailPelanggan->pelanggan_nama;?>" autofocus>
+                                            <div class="col-md-9">
+                                                <div class="input-group">
+                                                    <div class="input-icon right">
+                                                        <i class="fa"></i>
+                                                        <input type="text" class="form-control" name="nama_pelanggan" id="nama_pelanggan" autocomplete="off" placeholder="Cari Nama Pelanggan" value="<?=$detailPelanggan->pelanggan_nama;?>" autofocus>
+                                                    </div>
+                                                    <span class="input-group-btn">
+                                                        <a data-toggle="modal" data-target="#formCariPelanggan" class="btn btn-success"><i class="fa fa-search"></i></a>
+                                                        <a data-toggle="modal" data-target="#formModalPelanggan" class="btn btn-primary"><i class="fa fa-plus-circle"></i></a>
+                                                    </span>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <a data-toggle="modal" data-target="#formCariPelanggan" title="Cari Data Pelanggan"><i class="fa fa-search"></i></a>
-                                                <a data-toggle="modal" data-target="#formModalPelanggan" title="Tambah Pelanggan"><i class="fa fa-plus-circle"></i></a>
                                             </div>
                                         </div>
                                         <div class="form-group form-md-line-input">
@@ -367,6 +369,61 @@ function pilihPelanggan(id) {
         }
     });
 }
+
+$('#kode_barang').keydown(function (e) {
+    if (e.which === 9 || e.which == 13){
+        var kode_barang = $('#kode_barang').val();
+        if (kode_barang === '') {
+            swal({
+                title:"Info",
+                text: "Mohon Isi Kode Barang",
+                timer: 2000,
+                showConfirmButton: false,
+                type: "info"
+            });
+        } else {
+            $.ajax({
+                url : "<?=site_url('admin/penjualan/get_data_barang_by_kode/'); ?>" + kode_barang,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    if (data === null) {
+                        swal({
+                            title:"Info",
+                            text: "Kode Barang tidak ditemukan",
+                            timer: 2000,
+                            showConfirmButton: false,
+                            type: "info"
+                        });
+                    } else {
+                        var locale          = 'en';
+                        var options         = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                        var formatter       = new Intl.NumberFormat(locale, options);
+                        var disc_pelanggan  = document.getElementById("disc_pelanggan").value;
+                        $('#barang_id').val(data.barang_id);
+                        $('#kode_barang').val(data.barang_kode);
+                        $('#nama_barang').val(data.barang_nama);
+                        $('#kategori').val(data.kategori_nama);
+                        $('#harga').val(formatter.format(data.barang_total));
+                        $('#qty').val(1);
+                        $('#disc').val(disc_pelanggan);
+                        $('#total').val(formatter.format(data.barang_total));
+                        document.formBarang.qty.disabled=false;
+                        document.formBarang.disc.disabled=false;
+                        document.formBarang.btn_item.disabled=false;
+                        $("#btn_reset").attr("disabled", false);
+                        hitungSubTotal();
+                        $('#qty').focus();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error get data Barang from ajax');
+                }
+            });
+        }
+        e.preventDefault();
+    }
+});
 
 function pilihData(id) {
     $.ajax({
@@ -969,7 +1026,8 @@ $(document).ready(function() {
 });
 
 
-var printer = new Recta('2785262214', '1811');
+var statusprinter = '<?=$dataMeta->meta_print_status;?>';
+var printer       = new Recta('<?=$dataMeta->meta_print_key;?>', '<?=$dataMeta->meta_print_port;?>');
 function simpanTransaksi() {
     dataString = $(".form").serialize();
     $.ajax({
@@ -991,135 +1049,142 @@ function simpanTransaksi() {
                         type: "success"
                     });
                     
-                    // Cari Data by ID Penjualan Baru untuk Cetak Nota
-                    var penjualan_id = data.id;
-                    $.ajax({
-                        url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
-                        type: "POST",
-                        dataType: 'JSON',
-                        success: function(datap1) {
-                            var locale        = 'en';
-                            var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                            var formatter     = new Intl.NumberFormat(locale, options);
-                            var NoOrder       = datap1.penjualan_no;
-                            var Tanggal       = datap1.penjualan_tanggal;
-                            var Jam           = datap1.penjualan_jam;
-                            var NamaPelanggan = datap1.pelanggan_nama;
-                            var Kasir         = datap1.user_username;
-                            var Meja          = datap1.meja_nama;
-                            Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                            $.ajax({
-                                url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
-                                type: "POST",
-                                dataType: 'JSON',
-                                success: function(dataitem1) {
-                                    if (dataitem1 != null) {
-                                        var x1 = dataitem1.length;
-                                        for(var i = 0; i < x1; i++) {
-                                            var NamaBarang = dataitem1[i].penjualan_detail_nama;
-                                            var Harga      = formatter.format(dataitem1[i].penjualan_detail_harga);
-                                            var Qty        = formatter.format(dataitem1[i].penjualan_detail_qty);
-                                            var Subtotal   = formatter.format(dataitem1[i].penjualan_detail_subtotal);
-                                            ListItem(NamaBarang, Harga, Qty, Subtotal);
-                                        }
-
-                                        var TipeBayar  = datap1.tipe_nama;
-                                        var SubTotal   = formatter.format(datap1.penjualan_subtotal);
-                                        var Diskon     = formatter.format(datap1.penjualan_diskon);
-                                        var DiskonPOIN = formatter.format(datap1.penjualan_tukar_poin_rp);
-                                        var PPN        = formatter.format(datap1.penjualan_ppn);
-                                        var Total      = formatter.format(datap1.penjualan_total);
-                                        Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
-                                        FooterEnd();
-
-
-                                        // Cetak ke 2
-                                        $.ajax({
-                                            url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
-                                            type: "POST",
-                                            dataType: 'JSON',
-                                            success: function(datap2) {
-                                                var locale        = 'en';
-                                                var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                                                var formatter     = new Intl.NumberFormat(locale, options);
-                                                var NoOrder       = datap2.penjualan_no;
-                                                var Tanggal       = datap2.penjualan_tanggal;
-                                                var Jam           = datap2.penjualan_jam;
-                                                var NamaPelanggan = datap2.pelanggan_nama;
-                                                var Kasir         = datap2.user_username;
-                                                var Meja          = datap2.meja_nama;
-                                                Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                                                $.ajax({
-                                                    url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
-                                                    type: "POST",
-                                                    dataType: 'JSON',
-                                                    success: function(dataitem2) {
-                                                        if (dataitem2 != null) {
-                                                            var x2 = dataitem2.length;
-                                                            for(var i = 0; i < x2; i++) {
-                                                                var NamaBarang = dataitem2[i].penjualan_detail_nama;
-                                                                var Harga      = formatter.format(dataitem2[i].penjualan_detail_harga);
-                                                                var Qty        = formatter.format(dataitem2[i].penjualan_detail_qty);
-                                                                var Subtotal   = formatter.format(dataitem2[i].penjualan_detail_subtotal);
-                                                                ListItem(NamaBarang, Harga, Qty, Subtotal);
-                                                            }
-
-                                                            var TipeBayar  = datap2.tipe_nama;
-                                                            var SubTotal   = formatter.format(datap2.penjualan_subtotal);
-                                                            var Diskon     = formatter.format(datap2.penjualan_diskon);
-                                                            var DiskonPOIN = formatter.format(datap2.penjualan_tukar_poin_rp);
-                                                            var PPN        = formatter.format(datap2.penjualan_ppn);
-                                                            var Total      = formatter.format(datap2.penjualan_total);
-                                                            Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
-                                                            FooterEnd();
-
-                                                            // Cetak ke 3
-                                                            $.ajax({
-                                                                url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
-                                                                type: "POST",
-                                                                dataType: 'JSON',
-                                                                success: function(datap3) {
-                                                                    var locale        = 'en';
-                                                                    var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-                                                                    var formatter     = new Intl.NumberFormat(locale, options);
-                                                                    var NoOrder       = datap3.penjualan_no;
-                                                                    var Tanggal       = datap3.penjualan_tanggal;
-                                                                    var Jam           = datap3.penjualan_jam;
-                                                                    var NamaPelanggan = datap3.pelanggan_nama;
-                                                                    var Kasir         = datap3.user_username;
-                                                                    var Meja          = datap3.meja_nama;
-                                                                    Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
-                                                                    $.ajax({
-                                                                        url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
-                                                                        type: "POST",
-                                                                        dataType: 'JSON',
-                                                                        success: function(dataitem3) {
-                                                                            if (dataitem3 != null) {
-                                                                                var x3 = dataitem3.length;
-                                                                                for(var i = 0; i < x3; i++) {
-                                                                                    var NamaBarang = dataitem3[i].penjualan_detail_nama;
-                                                                                    var Qty        = formatter.format(dataitem3[i].penjualan_detail_qty);
-                                                                                    var Keterangan = dataitem3[i].penjualan_detail_keterangan;
-                                                                                    ListItemChecker(NamaBarang, Qty, Keterangan);
-                                                                                }
-                                                                                FooterChecker();
-                                                                            }
-                                                                        }
-                                                                    });
-                                                                }
-                                                            });
-                                                        }
-                                                    }
-                                                });
+                    if (statusprinter == 2) {
+                        var penjualan_id = data.id;
+                        $.ajax({
+                            url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
+                            type: "POST",
+                            dataType: 'JSON',
+                            success: function(datap1) {
+                                var locale        = 'en';
+                                var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                                var formatter     = new Intl.NumberFormat(locale, options);
+                                var NoOrder       = datap1.penjualan_no;
+                                var Tanggal       = datap1.penjualan_tanggal;
+                                var Jam           = datap1.penjualan_jam;
+                                var NamaPelanggan = datap1.pelanggan_nama;
+                                var Kasir         = datap1.user_username;
+                                var Meja          = datap1.meja_nama;
+                                Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+                                $.ajax({
+                                    url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
+                                    type: "POST",
+                                    dataType: 'JSON',
+                                    success: function(dataitem1) {
+                                        if (dataitem1 != null) {
+                                            var x1 = dataitem1.length;
+                                            for(var i = 0; i < x1; i++) {
+                                                var NamaBarang = dataitem1[i].penjualan_detail_nama;
+                                                var Harga      = formatter.format(dataitem1[i].penjualan_detail_harga);
+                                                var Qty        = formatter.format(dataitem1[i].penjualan_detail_qty);
+                                                var Subtotal   = formatter.format(dataitem1[i].penjualan_detail_subtotal);
+                                                ListItem(NamaBarang, Harga, Qty, Subtotal);
                                             }
-                                        });
+
+                                            var TipeBayar  = datap1.tipe_nama;
+                                            var SubTotal   = formatter.format(datap1.penjualan_subtotal);
+                                            var Diskon     = formatter.format(datap1.penjualan_diskon);
+                                            var DiskonPOIN = formatter.format(datap1.penjualan_tukar_poin_rp);
+                                            var PPN        = formatter.format(datap1.penjualan_ppn);
+                                            var Total      = formatter.format(datap1.penjualan_total);
+                                            Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
+                                            FooterEnd();
+
+
+                                            // Cetak ke 2
+                                            $.ajax({
+                                                url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
+                                                type: "POST",
+                                                dataType: 'JSON',
+                                                success: function(datap2) {
+                                                    var locale        = 'en';
+                                                    var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                                                    var formatter     = new Intl.NumberFormat(locale, options);
+                                                    var NoOrder       = datap2.penjualan_no;
+                                                    var Tanggal       = datap2.penjualan_tanggal;
+                                                    var Jam           = datap2.penjualan_jam;
+                                                    var NamaPelanggan = datap2.pelanggan_nama;
+                                                    var Kasir         = datap2.user_username;
+                                                    var Meja          = datap2.meja_nama;
+                                                    Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+                                                    $.ajax({
+                                                        url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
+                                                        type: "POST",
+                                                        dataType: 'JSON',
+                                                        success: function(dataitem2) {
+                                                            if (dataitem2 != null) {
+                                                                var x2 = dataitem2.length;
+                                                                for(var i = 0; i < x2; i++) {
+                                                                    var NamaBarang = dataitem2[i].penjualan_detail_nama;
+                                                                    var Harga      = formatter.format(dataitem2[i].penjualan_detail_harga);
+                                                                    var Qty        = formatter.format(dataitem2[i].penjualan_detail_qty);
+                                                                    var Subtotal   = formatter.format(dataitem2[i].penjualan_detail_subtotal);
+                                                                    ListItem(NamaBarang, Harga, Qty, Subtotal);
+                                                                }
+
+                                                                var TipeBayar  = datap2.tipe_nama;
+                                                                var SubTotal   = formatter.format(datap2.penjualan_subtotal);
+                                                                var Diskon     = formatter.format(datap2.penjualan_diskon);
+                                                                var DiskonPOIN = formatter.format(datap2.penjualan_tukar_poin_rp);
+                                                                var PPN        = formatter.format(datap2.penjualan_ppn);
+                                                                var Total      = formatter.format(datap2.penjualan_total);
+                                                                Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
+                                                                FooterEnd();
+
+                                                                // Cetak ke 3
+                                                                $.ajax({
+                                                                    url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
+                                                                    type: "POST",
+                                                                    dataType: 'JSON',
+                                                                    success: function(datap3) {
+                                                                        var locale        = 'en';
+                                                                        var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                                                                        var formatter     = new Intl.NumberFormat(locale, options);
+                                                                        var NoOrder       = datap3.penjualan_no;
+                                                                        var Tanggal       = datap3.penjualan_tanggal;
+                                                                        var Jam           = datap3.penjualan_jam;
+                                                                        var NamaPelanggan = datap3.pelanggan_nama;
+                                                                        var Kasir         = datap3.user_username;
+                                                                        var Meja          = datap3.meja_nama;
+                                                                        Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+                                                                        $.ajax({
+                                                                            url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
+                                                                            type: "POST",
+                                                                            dataType: 'JSON',
+                                                                            success: function(dataitem3) {
+                                                                                if (dataitem3 != null) {
+                                                                                    var x3 = dataitem3.length;
+                                                                                    for(var i = 0; i < x3; i++) {
+                                                                                        var NamaBarang = dataitem3[i].penjualan_detail_nama;
+                                                                                        var Qty        = formatter.format(dataitem3[i].penjualan_detail_qty);
+                                                                                        var Keterangan = dataitem3[i].penjualan_detail_keterangan;
+                                                                                        ListItemChecker(NamaBarang, Qty, Keterangan);
+                                                                                    }
+                                                                                    FooterChecker();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
                                     }
-                                }
-                            });
-                        }
-                    });
+                                });
+                            }
+                        });
+                    }
                 } else {
-                    console.log('ID Kosong');
+                    swal({
+                        title:"Info",
+                        text: "Data Penjualan Tidak Ada",
+                        timer: 2000,
+                        showConfirmButton: false,
+                        type: "info"
+                    });
                 }
 
                 $('#formModalBayar').modal('hide');
@@ -1145,28 +1210,6 @@ function simpanTransaksi() {
 
 function Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja) {
     var LimitChar = 20;
-    var NamaToko  = '<?=$Toko->contact_name;?>';
-    var Alamat    = '<?=$Toko->contact_address;?>';
-    var Telp      = '<?=$Toko->contact_phone;?>';
-
-    if(NamaToko.length <= LimitChar) {
-        txtToko = NamaToko;
-    } else {
-        txtToko = NamaToko.substring(0, LimitChar);
-    }
-
-    if(Alamat.length <= LimitChar) {
-        txtAlamat = Alamat;
-    } else {
-        txtAlamat = Alamat.substring(0, LimitChar);
-    }
-
-    if(Telp.length <= LimitChar) {
-        txtTelp = Telp;
-    } else {
-        txtTelp = Telp.substring(0, LimitChar);
-    }
-
     if(NoOrder.length <= LimitChar) {
         txtNoOrder = NoOrder;
     } else {
@@ -1287,7 +1330,7 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         .print()
     })
 
-    if (txtDiskon === '') {
+    if (txtDiskon != 0) {
         printer.open().then(function () {
             printer.align('left')
             .text("              Diskon : "+txtDiskon)
@@ -1295,7 +1338,7 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         })
     }
 
-    if (txtDiskonPOIN === '') {
+    if (txtDiskonPOIN != 0) {
         printer.open().then(function () {
             printer.align('left')
             .text("         Diskon POIN : "+txtDiskonPOIN)
@@ -1303,7 +1346,7 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         })
     }
 
-    if (txtPPN === '') {
+    if (txtPPN != 0) {
         printer.open().then(function () {
         printer.align('left')
             .text("             PPN (%) : "+txtPPN)
@@ -1370,6 +1413,24 @@ function FooterChecker() {
         .print()
     })
 }
+
+$(document).ready(function() {
+    $('#formModalBayar').on('shown.bs.modal', function() {
+        $('#lstTipe').focus();
+    });
+
+    $("body").on('keyup', "#diskon", function(){
+        hitungDiskon();
+    });
+
+    $("body").on('keyup', "#tukar_poin", function(){
+        tukarPOIN();
+    });
+
+    $("body").on('keyup', "#bayar", function(){
+        hitungKembalian();
+    });
+});
 </script>
 
 <div class="modal fade bs-modal-lg" id="formDataBarang" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1555,7 +1616,7 @@ function FooterChecker() {
                             <div class="form-group">
                                 <label class="col-md-4 control-label">TUKAR</label>
                                 <div class="col-md-3">
-                                    <input type="text" class="form-control" name="tukar_poin" id="tukar_poin" placeholder="0" autocomplete="off" onkeydown="tukarPOIN()">
+                                    <input type="text" class="form-control" name="tukar_poin" id="tukar_poin" placeholder="0" autocomplete="off">
                                 </div>
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" name="tukar_poin_rp" id="tukar_poin_rp" placeholder="0" readonly>
@@ -1568,7 +1629,7 @@ function FooterChecker() {
                             <div class="form-group">
                                 <label class="col-md-4 control-label">Diskon (Rp)</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control number" name="diskon" id="diskon" placeholder="0" autocomplete="off" onkeydown="hitungDiskon()">
+                                    <input type="text" class="form-control number" name="diskon" id="diskon" placeholder="0" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -1586,7 +1647,7 @@ function FooterChecker() {
                             <div class="form-group">
                                 <label class="col-md-4 control-label">Bayar</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control number" name="bayar" id="bayar" placeholder="0" autocomplete="off" onfocusout="hitungKembalian()">
+                                    <input type="text" class="form-control number" name="bayar" id="bayar" placeholder="0" autocomplete="off">
                                 </div>
                             </div>
                         </div>

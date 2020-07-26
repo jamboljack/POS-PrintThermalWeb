@@ -59,15 +59,16 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Nama Pelanggan</label>
-                                            <div class="col-md-8">
-                                                <div class="input-icon right">
-                                                    <i class="fa"></i>
-                                                    <input type="text" class="form-control" name="nama_pelanggan" id="nama_pelanggan" autocomplete="off" placeholder="Cari Nama Pelanggan" autofocus>
+                                            <div class="col-md-9">
+                                                <div class="input-group">
+                                                    <div class="input-icon right">
+                                                        <i class="fa"></i>
+                                                        <input type="text" class="form-control" name="nama_pelanggan" id="nama_pelanggan" autocomplete="off" placeholder="Cari Nama Pelanggan" autofocus>
+                                                    </div>
+                                                    <span class="input-group-btn">
+                                                        <a data-toggle="modal" data-target="#formCariPelanggan" class="btn btn-success"><i class="fa fa-search"></i></a>
+                                                    </span>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <a data-toggle="modal" data-target="#formCariPelanggan" title="Cari Data Pelanggan"><i class="fa fa-search"></i></a>
-                                                <a data-toggle="modal" data-target="#formModalPelanggan" title="Tambah Pelanggan"><i class="fa fa-plus-circle"></i></a>
                                             </div>
                                         </div>
                                         <div class="form-group form-md-line-input">
@@ -360,6 +361,62 @@ function pilihPelanggan(id) {
         }
     });
 }
+
+$('#kode_barang').keydown(function (e) {
+    if (e.which === 9 || e.which == 13){
+        var kode_barang = $('#kode_barang').val();
+        if (kode_barang === '') {
+            swal({
+                title:"Info",
+                text: "Mohon Isi Kode Barang",
+                timer: 2000,
+                showConfirmButton: false,
+                type: "info"
+            });
+        } else {
+            $.ajax({
+                url : "<?=site_url('admin/penjualan/get_data_barang_by_kode/'); ?>" + kode_barang,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    if (data === null) {
+                        swal({
+                            title:"Info",
+                            text: "Kode Barang tidak ditemukan",
+                            timer: 2000,
+                            showConfirmButton: false,
+                            type: "info"
+                        });
+                    } else {
+                        var locale          = 'en';
+                        var options         = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                        var formatter       = new Intl.NumberFormat(locale, options);
+                        var disc_pelanggan  = document.getElementById("disc_pelanggan").value;
+                        $('#barang_id').val(data.barang_id);
+                        $('#kode_barang').val(data.barang_kode);
+                        $('#nama_barang').val(data.barang_nama);
+                        $('#kategori').val(data.kategori_nama);
+                        $('#harga').val(formatter.format(data.barang_total));
+                        $('#qty').val(1);
+                        $('#disc').val(disc_pelanggan);
+                        $('#total').val(formatter.format(data.barang_total));
+                        document.formBarang.qty.disabled=false;
+                        document.formBarang.disc.disabled=false;
+                        document.formBarang.btn_item.disabled=false;
+                        $("#btn_reset").attr("disabled", false);
+                        hitungSubTotal();
+                        $('#qty').focus();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error get data Barang from ajax');
+                }
+            });
+        }
+        e.preventDefault();
+    }
+});
+
 
 function pilihData(id) {
     $.ajax({

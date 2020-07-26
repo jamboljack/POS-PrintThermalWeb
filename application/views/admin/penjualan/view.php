@@ -154,75 +154,142 @@ function hapusData(penjualan_id) {
     });
 }
 
-function printNota(penjualan_id) {
-    // $.ajax({
-    //     url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
-    //     type: "POST",
-    //     dataType: 'JSON',
-    //     success: function(datap) {
-    //         var locale        = 'en';
-    //         var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
-    //         var formatter     = new Intl.NumberFormat(locale, options);
-    //         var NoOrder       = datap.penjualan_no;
-    //         var Tanggal       = datap.penjualan_tanggal;
-    //         var NamaPelanggan = datap.pelanggan_nama;
-    //         var Kasir         = datap.user_username;
-    //         Header(NoOrder, Tanggal, NamaPelanggan, Kasir);
-    //         // Detail Item
-    //         $.ajax({
-    //             url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
-    //             type: "POST",
-    //             dataType: 'JSON',
-    //             success: function(dataitem) {
-    //                 if (dataitem != null) {
-    //                     var x = dataitem.length;
-    //                     for(var i = 0; i < x; i++) {
-    //                         var NamaBarang = dataitem[i].penjualan_detail_nama;
-    //                         var Harga      = formatter.format(dataitem[i].penjualan_detail_harga);
-    //                         var Qty        = formatter.format(dataitem[i].penjualan_detail_qty);
-    //                         var SubTotal   = formatter.format(dataitem[i].penjualan_detail_subtotal);
-    //                         ListItem(NamaBarang, Harga, Qty, SubTotal);
-    //                     }
-
-    //                     var SubTotal   = formatter.format(datap.penjualan_subtotal);
-    //                     var Diskon     = formatter.format(datap.penjualan_diskon);
-    //                     var DiskonPOIN = formatter.format(datap.penjualan_tukar_poin_rp);
-    //                     var Total      = formatter.format(datap.penjualan_total);
-    //                     Footer(SubTotal, Diskon, DiskonPOIN, Total);
-    //                 }
-    //             }
-    //         });
-    //     }
-    // });
-
+function printFaktur(penjualan_id) {
     var url = "<?=site_url('admin/penjualan/printfaktur/');?>"+penjualan_id;
     window.open(url, "_blank");
 }
 
-function Header(NoOrder, Tanggal, NamaPelanggan, Kasir) {
+var printer = new Recta('<?=$dataMeta->meta_print_key;?>', '<?=$dataMeta->meta_print_port;?>');
+function printNota(penjualan_id) {
+    $.ajax({
+        url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
+        type: "POST",
+        dataType: 'JSON',
+        success: function(datap1) {
+            var locale        = 'en';
+            var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+            var formatter     = new Intl.NumberFormat(locale, options);
+            var NoOrder       = datap1.penjualan_no;
+            var Tanggal       = datap1.penjualan_tanggal;
+            var Jam           = datap1.penjualan_jam;
+            var NamaPelanggan = datap1.pelanggan_nama;
+            var Kasir         = datap1.user_username;
+            var Meja          = datap1.meja_nama;
+            Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+            $.ajax({
+                url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
+                type: "POST",
+                dataType: 'JSON',
+                success: function(dataitem1) {
+                    if (dataitem1 != null) {
+                        var x1 = dataitem1.length;
+                        for(var i = 0; i < x1; i++) {
+                            var NamaBarang = dataitem1[i].penjualan_detail_nama;
+                            var Harga      = formatter.format(dataitem1[i].penjualan_detail_harga);
+                            var Qty        = formatter.format(dataitem1[i].penjualan_detail_qty);
+                            var Subtotal   = formatter.format(dataitem1[i].penjualan_detail_subtotal);
+                            ListItem(NamaBarang, Harga, Qty, Subtotal);
+                        }
+
+                        var TipeBayar  = datap1.tipe_nama;
+                        var SubTotal   = formatter.format(datap1.penjualan_subtotal);
+                        var Diskon     = formatter.format(datap1.penjualan_diskon);
+                        var DiskonPOIN = formatter.format(datap1.penjualan_tukar_poin_rp);
+                        var PPN        = formatter.format(datap1.penjualan_ppn);
+                        var Total      = formatter.format(datap1.penjualan_total);
+                        Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
+                        FooterEnd();
+
+
+                        // Cetak ke 2
+                        $.ajax({
+                            url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
+                            type: "POST",
+                            dataType: 'JSON',
+                            success: function(datap2) {
+                                var locale        = 'en';
+                                var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                                var formatter     = new Intl.NumberFormat(locale, options);
+                                var NoOrder       = datap2.penjualan_no;
+                                var Tanggal       = datap2.penjualan_tanggal;
+                                var Jam           = datap2.penjualan_jam;
+                                var NamaPelanggan = datap2.pelanggan_nama;
+                                var Kasir         = datap2.user_username;
+                                var Meja          = datap2.meja_nama;
+                                Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+                                $.ajax({
+                                    url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
+                                    type: "POST",
+                                    dataType: 'JSON',
+                                    success: function(dataitem2) {
+                                        if (dataitem2 != null) {
+                                            var x2 = dataitem2.length;
+                                            for(var i = 0; i < x2; i++) {
+                                                var NamaBarang = dataitem2[i].penjualan_detail_nama;
+                                                var Harga      = formatter.format(dataitem2[i].penjualan_detail_harga);
+                                                var Qty        = formatter.format(dataitem2[i].penjualan_detail_qty);
+                                                var Subtotal   = formatter.format(dataitem2[i].penjualan_detail_subtotal);
+                                                ListItem(NamaBarang, Harga, Qty, Subtotal);
+                                            }
+
+                                            var TipeBayar  = datap2.tipe_nama;
+                                            var SubTotal   = formatter.format(datap2.penjualan_subtotal);
+                                            var Diskon     = formatter.format(datap2.penjualan_diskon);
+                                            var DiskonPOIN = formatter.format(datap2.penjualan_tukar_poin_rp);
+                                            var PPN        = formatter.format(datap2.penjualan_ppn);
+                                            var Total      = formatter.format(datap2.penjualan_total);
+                                            Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
+                                            FooterEnd();
+
+                                            // Cetak ke 3
+                                            $.ajax({
+                                                url: '<?=site_url('admin/penjualan/get_data/');?>'+penjualan_id,
+                                                type: "POST",
+                                                dataType: 'JSON',
+                                                success: function(datap3) {
+                                                    var locale        = 'en';
+                                                    var options       = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+                                                    var formatter     = new Intl.NumberFormat(locale, options);
+                                                    var NoOrder       = datap3.penjualan_no;
+                                                    var Tanggal       = datap3.penjualan_tanggal;
+                                                    var Jam           = datap3.penjualan_jam;
+                                                    var NamaPelanggan = datap3.pelanggan_nama;
+                                                    var Kasir         = datap3.user_username;
+                                                    var Meja          = datap3.meja_nama;
+                                                    Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
+                                                    $.ajax({
+                                                        url: '<?=site_url('admin/penjualan/get_list_item/');?>'+penjualan_id,
+                                                        type: "POST",
+                                                        dataType: 'JSON',
+                                                        success: function(dataitem3) {
+                                                            if (dataitem3 != null) {
+                                                                var x3 = dataitem3.length;
+                                                                for(var i = 0; i < x3; i++) {
+                                                                    var NamaBarang = dataitem3[i].penjualan_detail_nama;
+                                                                    var Qty        = formatter.format(dataitem3[i].penjualan_detail_qty);
+                                                                    var Keterangan = dataitem3[i].penjualan_detail_keterangan;
+                                                                    ListItemChecker(NamaBarang, Qty, Keterangan);
+                                                                }
+                                                                FooterChecker();
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+}
+
+function Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja) {
     var LimitChar = 20;
-    var NamaToko  = '<?=$Toko->contact_name;?>';
-    var Alamat    = '<?=$Toko->contact_address;?>';
-    var Telp      = '<?=$Toko->contact_phone;?>';
-
-    if(NamaToko.length <= LimitChar) {
-        txtToko = NamaToko;
-    } else {
-        txtToko = NamaToko.substring(0, LimitChar);
-    }
-
-    if(Alamat.length <= LimitChar) {
-        txtAlamat = Alamat;
-    } else {
-        txtAlamat = Alamat.substring(0, LimitChar);
-    }
-
-    if(Telp.length <= LimitChar) {
-        txtTelp = Telp;
-    } else {
-        txtTelp = Telp.substring(0, LimitChar);
-    }
-
     if(NoOrder.length <= LimitChar) {
         txtNoOrder = NoOrder;
     } else {
@@ -235,23 +302,24 @@ function Header(NoOrder, Tanggal, NamaPelanggan, Kasir) {
         txtNamaPelanggan = NamaPelanggan.substring(0, LimitChar);
     }
 
-    var printer = new Recta('2785262214', '1811')
     printer.open().then(function () {
       printer.align('left')
         .bold(true)
-        .text('Toko      : '+txtToko)
+        .text('     BLACKSTONE STREETLOUNGE    ')
+        .text('             RUKO UMK           ')
         .bold(false)
-        .text('Alamat    : '+txtAlamat)
-        .text('No  Telp  : '+txtTelp)
-        .text('No  Order : '+txtNoOrder)
-        .text('Tanggal   : '+Tanggal)
+        .text('--------------------------------')
+        .print()
+    })
+
+    printer.open().then(function () {
+      printer.align('left')
+        .text('No. Order : '+txtNoOrder)
+        .text('Tanggal   : '+Tanggal+" "+Jam)
         .text('Pelanggan : '+txtNamaPelanggan)
         .text('Kasir     : '+Kasir)
-        .text('================================')
-        .text('Nama Barang   Harga Qty Subtotal')
-        .text('================================')
-        // .feed(5)
-        // .cut()
+        .text('Meja      : '+Meja)
+        .text('--------------------------------')
         .print()
     })
 }
@@ -264,7 +332,7 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
     var txtBarang       = '';
     var txtHarga        = 0;
     var txtQty          = 0;
-    var txtSubTotal     = 0;
+    var txtSubtotal     = 0;
 
     if(NamaBarang.length <= limitNamaBarang) {
         txtBarang = NamaBarang.padEnd(limitNamaBarang, ' ')
@@ -290,7 +358,6 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
         txtSubtotal = Subtotal.substring(0, limitSubtotal);
     }
 
-    var printer = new Recta('2785262214', '1811')
     printer.open().then(function () {
       printer.align('left')
         .text(txtBarang+" "+txtHarga+" "+txtQty+""+txtSubtotal)
@@ -298,11 +365,12 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
     })
 }
 
-function Footer(SubTotal, Diskon, DiskonPOIN, Total) {
+function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
     var limitNominal    = 9;
     var txtSubTotal     = 0;
     var txtDiskon       = 0;
     var txtDiskonPOIN   = 0;
+    var txtPPN          = 0;
     var txtTotal        = 0;
 
     if (SubTotal.length <= limitNominal) {
@@ -323,21 +391,103 @@ function Footer(SubTotal, Diskon, DiskonPOIN, Total) {
         txtDiskonPOIN = DiskonPOIN.substring(0, limitNominal);
     }
 
+    if (PPN.length <= limitNominal) {
+        txtPPN = PPN.padStart(limitNominal, ' ')
+    } else {
+        txtPPN = PPN.substring(0, limitNominal);
+    }
+
     if (Total.length <= limitNominal) {
         txtTotal = Total.padStart(limitNominal, ' ')
     } else {
         txtTotal = Total.substring(0, limitNominal);
     }
 
-    var printer = new Recta('2785262214', '1811')
     printer.open().then(function () {
-      printer.align('left')
-        .text("           Sub Total : "+txtSubtotal)
-        .text("              Diskon : "+txtDiskon)
-        .text("         Diskon POIN : "+txtDiskonPOIN)
+        printer.align('left')
+        .text(TipeBayar)
+        .text("           Sub Total : "+txtSubTotal)
+        .print()
+    })
+
+    if (txtDiskon != 0) {
+        printer.open().then(function () {
+            printer.align('left')
+            .text("              Diskon : "+txtDiskon)
+            .print()
+        })
+    }
+
+    if (txtDiskonPOIN != 0) {
+        printer.open().then(function () {
+            printer.align('left')
+            .text("         Diskon POIN : "+txtDiskonPOIN)
+            .print()
+        })
+    }
+
+    if (txtPPN != 0) {
+        printer.open().then(function () {
+        printer.align('left')
+            .text("             PPN (%) : "+txtPPN)
+            .print()
+        })
+    }
+
+    printer.open().then(function () {
+        printer.align('left')
         .text("               TOTAL : "+txtTotal)
         .text("--------------------------------")
-        .text("Terima Kasih atas kunjungan Anda")
+        .print()
+    })
+}
+
+function FooterEnd() {
+    printer.open().then(function () {
+        printer.align('left')
+        .text('<?=$dataMeta->meta_footer;?>')
+        .feed(3)
+        .cut()
+        .print()
+    })
+}
+
+function ListItemChecker(NamaBarang, Qty, Keterangan) {
+    var limitNamaBarang = 11;
+    var limitQty        = 3;
+    var limitKeterangan = 16;
+    var txtBarang       = '';
+    var txtQty          = 0;
+    var txtKeterangan   = '';
+
+    if(NamaBarang.length <= limitNamaBarang) {
+        txtBarang = NamaBarang.padEnd(limitNamaBarang, ' ')
+    } else {
+        txtBarang = NamaBarang.substring(0, limitNamaBarang);
+    }
+
+    if (Qty.length <= limitQty) {
+        txtQty = Qty.padStart(limitQty, ' ')
+    } else {
+        txtQty = Qty.substring(0, limitQty);
+    }
+
+    if(Keterangan.length <= limitKeterangan) {
+        txtKeterangan = Keterangan.padEnd(limitKeterangan, ' ')
+    } else {
+        txtKeterangan = Keterangan.substring(0, limitKeterangan);
+    }
+
+    printer.open().then(function () {
+      printer.align('left')
+        .text(txtBarang+" "+txtQty+" "+txtKeterangan)
+        .print()
+    })
+}
+
+function FooterChecker() {
+    printer.open().then(function () {
+        printer.align('left')
         .feed(5)
         .cut()
         .print()

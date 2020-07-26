@@ -139,6 +139,34 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">API Key Printer</label>
+                                    <div class="col-md-2">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control" name="key" placeholder="Input Key Printer" value="<?=$detail->meta_print_key;?>" autocomplete="off"  />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Port Printer</label>
+                                    <div class="col-md-2">
+                                        <div class="input-icon right">
+                                            <i class="fa"></i>
+                                            <input type="text" class="form-control" name="port" placeholder="Input Port Printer" value="<?=$detail->meta_print_port;?>" autocomplete="off"  />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Set Printer</label>
+                                    <div class="col-md-2">
+                                        <select class="form-control" name="lstSetPrinter" >
+                                            <option value="">- Pilih -</option>
+                                            <option value="1" <?=($detail->meta_print_status==1?'selected':'');?>>Off</option>
+                                            <option value="2" <?=($detail->meta_print_status==2?'selected':'');?>>On</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-actions">
                                 <div class="row">
@@ -181,7 +209,9 @@ $(document).ready(function() {
             lstRobot: { required: true },
             lstGoogle: { required: true },
             poin: { required: true },
-            footer: { required: true }
+            footer: { required: true },
+            key: { required: true },
+            port: { required: true }
         },
         messages: {
             name: { required :'Nama APP required' },
@@ -192,7 +222,9 @@ $(document).ready(function() {
             lstRobot: { required :'Robots required' },
             lstGoogle: { required :'Googlebots required' },
             poin: { required :'Minimal Poin required' },
-            footer: { required :'Footer Nota required' }
+            footer: { required :'Footer Nota required' },
+            key: { required :'Key Printer required' },
+            port: { required :'Port Printer required' }
         },
         invalidHandler: function (event, validator) {
             success.hide();
