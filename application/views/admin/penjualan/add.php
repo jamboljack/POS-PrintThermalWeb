@@ -739,6 +739,7 @@ function resetFormJual() {
     $('#tukar_poin_rp').val('');
     $('#bayar_subtotal').val('');
     $('#diskon').val('');
+    $('#discpersen').val('');
     $('#bayar_total').val('');
     $('#lstTipe').val('');
     $('#bayar').val('');
@@ -871,7 +872,7 @@ function simpanPelanggan() {
     return false;
 }
 
-function hitungDiskon() {
+function hitungDiscPersen() {
     var locale              = 'en';
     var options             = {minimumFractionDigits: 0, maximumFractionDigits: 0};
     var formatter           = new Intl.NumberFormat(locale, options);
@@ -882,6 +883,78 @@ function hitungDiskon() {
     var DiskonPOIN          = myForm.tukar_poin_rp.value;
     DiskonPOIN              = DiskonPOIN.replace(/[,]/g, '');
     DiskonPOIN              = parseInt(DiskonPOIN);
+    var DiscPersen          = myForm.discpersen.value;
+    DiscPersen              = DiscPersen.replace(/[,]/g, '');
+    DiscPersen              = parseFloat(DiscPersen);
+    // var Diskon              = myForm.diskon.value;
+    // Diskon                  = Diskon.replace(/[,]/g, '');
+    // Diskon                  = parseInt(Diskon);
+    var Ppn                 = myForm.bayar_ppn.value;
+    Ppn                     = Ppn.replace(/[,]/g, '');
+    Ppn                     = parseFloat(Ppn);
+    var Total               = myForm.bayar_total.value;
+    Total                   = Total.replace(/[,]/g, '');
+    Total                   = parseInt(Total);
+
+    if (Ppn === 0 || isNaN(Ppn)) {
+        var Pajak = 0;
+    } else {
+        var Pajak = Ppn;
+    }
+
+    if (isNaN(DiskonPOIN)) {
+        DiskonPOIN = 0
+    } else {
+        DiskonPOIN = DiskonPOIN;
+    }
+
+    if (DiscPersen === 0 || isNaN(DiscPersen)) {
+        Diskon = 0;
+    } else {
+        Diskon = (Subtotal*DiscPersen)/100;
+    }
+
+    if (Diskon === 0 || isNaN(Diskon)) {
+        var SubTotalAkhir   = (Subtotal-DiskonPOIN);
+        var PPN             = ((Pajak*SubTotalAkhir)/100);
+        var TotalAkhir      = (SubTotalAkhir+PPN);
+    } else {
+        var SubTotalAkhir   = (Subtotal-(Diskon+DiskonPOIN));
+        var PPN             = ((Pajak*SubTotalAkhir)/100);
+        var TotalAkhir      = (SubTotalAkhir+PPN);
+    }
+
+    if (isNaN(Diskon)) {
+        myForm.diskon.value = 0;
+    } else {
+        myForm.diskon.value = formatter.format(Diskon);
+    }
+
+    if (isNaN(TotalAkhir)) {
+        myForm.bayar_total.value = 0;
+        $('#totalpenjualan').val(0);
+    } else {
+        myForm.bayar_total.value = formatter.format(TotalAkhir);
+        $('#totalpenjualan').val(TotalAkhir);
+    }
+}
+
+function hitungDiskon() {
+    var locale              = 'en';
+    var options             = {minimumFractionDigits: 0, maximumFractionDigits: 0};
+    var formatter           = new Intl.NumberFormat(locale, options);
+    var options1            = {minimumFractionDigits: 2, maximumFractionDigits: 2};
+    var formatter1          = new Intl.NumberFormat(locale, options1);
+    var myForm              = document.formBayar;
+    var Subtotal            = myForm.bayar_subtotal.value;
+    Subtotal                = Subtotal.replace(/[,]/g, '');
+    Subtotal                = parseInt(Subtotal);
+    var DiskonPOIN          = myForm.tukar_poin_rp.value;
+    DiskonPOIN              = DiskonPOIN.replace(/[,]/g, '');
+    DiskonPOIN              = parseInt(DiskonPOIN);
+    // var DiscPersen          = myForm.discpersen.value;
+    // DiscPersen              = DiscPersen.replace(/[,]/g, '');
+    // DiscPersen              = parseFloat(DiscPersen);
     var Diskon              = myForm.diskon.value;
     Diskon                  = Diskon.replace(/[,]/g, '');
     Diskon                  = parseInt(Diskon);
@@ -904,18 +977,26 @@ function hitungDiskon() {
         DiskonPOIN = DiskonPOIN;
     }
 
-    // console.log(Subtotal, Pajak, DiskonPOIN, Diskon, Total);
+    if (Diskon === 0 || isNaN(Diskon)) {
+        DiscPersen = 0;
+    } else {
+        DiscPersen = (Diskon/Subtotal)*100;
+    }
+
+    if (isNaN(DiscPersen)) {
+        myForm.discpersen.value = 0;
+    } else {
+        myForm.discpersen.value = formatter1.format(DiscPersen);
+    }
 
     if (Diskon === 0 || isNaN(Diskon)) {
         var SubTotalAkhir   = (Subtotal-DiskonPOIN);
         var PPN             = ((Pajak*SubTotalAkhir)/100);
         var TotalAkhir      = (SubTotalAkhir+PPN);
-        // var TotalAkhir      = SubTotalAkhir;
     } else {
         var SubTotalAkhir   = (Subtotal-(Diskon+DiskonPOIN));
         var PPN             = ((Pajak*SubTotalAkhir)/100);
         var TotalAkhir      = (SubTotalAkhir+PPN);
-        // var TotalAkhir      = SubTotalAkhir;
     }
 
     if (isNaN(TotalAkhir)) {
@@ -1062,7 +1143,7 @@ function simpanTransaksi() {
                                 var NoOrder       = datap1.penjualan_no;
                                 var Tanggal       = datap1.penjualan_tanggal;
                                 var Jam           = datap1.penjualan_jam;
-                                var NamaPelanggan = datap1.pelanggan_nama;
+                                var NamaPelanggan = datap1.penjualan_nama;
                                 var Kasir         = datap1.user_username;
                                 var Meja          = datap1.meja_nama;
                                 Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
@@ -1103,7 +1184,7 @@ function simpanTransaksi() {
                                                     var NoOrder       = datap2.penjualan_no;
                                                     var Tanggal       = datap2.penjualan_tanggal;
                                                     var Jam           = datap2.penjualan_jam;
-                                                    var NamaPelanggan = datap2.pelanggan_nama;
+                                                    var NamaPelanggan = datap2.penjualan_nama;
                                                     var Kasir         = datap2.user_username;
                                                     var Meja          = datap2.meja_nama;
                                                     Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
@@ -1143,7 +1224,7 @@ function simpanTransaksi() {
                                                                         var NoOrder       = datap3.penjualan_no;
                                                                         var Tanggal       = datap3.penjualan_tanggal;
                                                                         var Jam           = datap3.penjualan_jam;
-                                                                        var NamaPelanggan = datap3.pelanggan_nama;
+                                                                        var NamaPelanggan = datap3.penjualan_nama;
                                                                         var Kasir         = datap3.user_username;
                                                                         var Meja          = datap3.meja_nama;
                                                                         Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
@@ -1423,6 +1504,10 @@ $(document).ready(function() {
         hitungDiskon();
     });
 
+    $("body").on('keyup', "#discpersen", function(){
+        hitungDiscPersen();
+    });
+
     $("body").on('keyup', "#tukar_poin", function(){
         tukarPOIN();
     });
@@ -1550,8 +1635,8 @@ $(document).ready(function() {
     </div>
 </div>
 
-<div class="modal" id="formModalBayar" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="formModalBayar" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form role="form" method="post" id="formBayar" name="formBayar" class="form-horizontal form">
                 <div class="modal-header">
@@ -1628,7 +1713,10 @@ $(document).ready(function() {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="col-md-4 control-label">Diskon (Rp)</label>
-                                <div class="col-md-8">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control digit" name="discpersen" id="discpersen" placeholder="0.00" autocomplete="off">
+                                </div>
+                                <div class="col-md-5">
                                     <input type="text" class="form-control number" name="diskon" id="diskon" placeholder="0" autocomplete="off">
                                 </div>
                             </div>

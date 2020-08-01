@@ -4,7 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Penjualan_m extends CI_Model
 {
     public $table         = 'v_penjualan';
-    public $column_order  = array(null, null, 'penjualan_no', 'penjualan_tanggal', 'pelanggan_nama', 'meja_nama', 'user_name', 'penjualan_total');
+    public $column_order  = array(null, null, 'penjualan_no', 'penjualan_tanggal', 'pelanggan_nama', 'meja_nama', 'user_name', 
+        'penjualan_subtotal', 'penjualan_diskon', 'penjualan_total');
     public $column_search = array('penjualan_no', 'penjualan_tanggal', 'pelanggan_nama', 'meja_nama', 'user_name');
     public $order         = array('penjualan_no' => 'desc');
 
@@ -464,7 +465,9 @@ class Penjualan_m extends CI_Model
             'pelanggan_id'            => $this->input->post('pelanggan_id', 'true'),
             'penjualan_no'            => $noFaktur,
             'penjualan_tanggal'       => date('Y-m-d'),
+            'penjualan_nama'          => strtoupper(trim(stripHTMLtags($this->input->post('nama_pelanggan', 'true')))),
             'penjualan_diskon'        => intval(str_replace(",", "", $this->input->post('diskon', 'true'))),
+            'penjualan_diskon_persen' => str_replace(",", "", $this->input->post('discpersen', 'true')),
             'penjualan_subtotal'      => intval(str_replace(",", "", $this->input->post('bayar_subtotal', 'true'))),
             'penjualan_netto'         => $netto,
             'penjualan_total'         => intval(str_replace(",", "", $this->input->post('bayar_total', 'true'))),

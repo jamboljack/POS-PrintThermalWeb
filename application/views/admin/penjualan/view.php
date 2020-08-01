@@ -52,7 +52,9 @@
                                 <th width="10%">Tanggal</th>
                                 <th>Pelanggan</th>
                                 <th width="5%">Meja</th>
-                                <th width="15%">Kasir</th>
+                                <th width="10%">Kasir</th>
+                                <th width="10%">Subtotal</th>
+                                <th width="10%">Diskon</th>
                                 <th width="10%">Total</th>
                             </tr>
                         </thead>
@@ -102,7 +104,7 @@ $(document).ready(function() {
                 "className": "text-center",
             },
             {
-                "targets": [ 7 ],
+                "targets": [ 7, 8, 9 ],
                 "className": "text-right",
             }
         ],
@@ -172,7 +174,7 @@ function printNota(penjualan_id) {
             var NoOrder       = datap1.penjualan_no;
             var Tanggal       = datap1.penjualan_tanggal;
             var Jam           = datap1.penjualan_jam;
-            var NamaPelanggan = datap1.pelanggan_nama;
+            var NamaPelanggan = datap1.penjualan_nama;
             var Kasir         = datap1.user_username;
             var Meja          = datap1.meja_nama;
             Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
@@ -213,7 +215,7 @@ function printNota(penjualan_id) {
                                 var NoOrder       = datap2.penjualan_no;
                                 var Tanggal       = datap2.penjualan_tanggal;
                                 var Jam           = datap2.penjualan_jam;
-                                var NamaPelanggan = datap2.pelanggan_nama;
+                                var NamaPelanggan = datap2.penjualan_nama;
                                 var Kasir         = datap2.user_username;
                                 var Meja          = datap2.meja_nama;
                                 Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);
@@ -253,7 +255,7 @@ function printNota(penjualan_id) {
                                                     var NoOrder       = datap3.penjualan_no;
                                                     var Tanggal       = datap3.penjualan_tanggal;
                                                     var Jam           = datap3.penjualan_jam;
-                                                    var NamaPelanggan = datap3.pelanggan_nama;
+                                                    var NamaPelanggan = datap3.penjualan_nama;
                                                     var Kasir         = datap3.user_username;
                                                     var Meja          = datap3.meja_nama;
                                                     Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja);

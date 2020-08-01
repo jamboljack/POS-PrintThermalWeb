@@ -42,6 +42,8 @@ class Penjualan extends MY_Controller
             $row[]  = $r->pelanggan_nama;
             $row[]  = $r->meja_nama;
             $row[]  = $r->user_name;
+            $row[]  = number_format($r->penjualan_subtotal, 0, '', ',');
+            $row[]  = number_format($r->penjualan_diskon, 0, '', ',');
             $row[]  = number_format($r->penjualan_total, 0, '', ',');
             $data[] = $row;
         }
@@ -297,7 +299,6 @@ class Penjualan extends MY_Controller
 
     public function savedata()
     {
-        // $this->penjualan_m->insert_data_penjualan();
         $bayar = intval(str_replace(",", "", $this->input->post('bayar', 'true')));
         $total = intval(str_replace(",", "", $this->input->post('bayar_total', 'true')));
         if ($bayar < $total) {
@@ -313,11 +314,13 @@ class Penjualan extends MY_Controller
                 'pelanggan_id'            => $this->input->post('pelanggan_id', 'true'),
                 'tipe_id'                 => $this->input->post('lstTipe', 'true'),
                 'penjualan_no'            => $noFaktur,
+                'penjualan_nama'          => strtoupper(trim(stripHTMLtags($this->input->post('nama_pelanggan', 'true')))),
                 'penjualan_tanggal'       => date('Y-m-d'),
                 'penjualan_jam'           => date('H:i:s'),
                 'penjualan_ppn'           => intval(str_replace(",", "", $this->input->post('bayar_ppn', 'true'))),
                 'penjualan_ppn_rp'        => intval(str_replace(",", "", $this->input->post('ppn_rupiah', 'true'))),
                 'penjualan_diskon'        => intval(str_replace(",", "", $this->input->post('diskon', 'true'))),
+                'penjualan_diskon_persen' => str_replace(",", "", $this->input->post('discpersen', 'true')),
                 'penjualan_subtotal'      => intval(str_replace(",", "", $this->input->post('bayar_subtotal', 'true'))),
                 'penjualan_netto'         => $netto,
                 'penjualan_total'         => intval(str_replace(",", "", $this->input->post('bayar_total', 'true'))),
