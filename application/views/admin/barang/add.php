@@ -49,15 +49,28 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="col-md-3 control-label">Nama Barang</label>
-                                            <div class="col-md-9">
+                                            <label class="col-md-3 control-label">Kode</label>
+                                            <div class="col-md-5">
                                                 <div class="input-icon right">
                                                     <i class="fa"></i>
-                                                    <input type="text" class="form-control" placeholder="Enter Nama Barang" name="nama" id="nama" autocomplete="off" autofocus>
+                                                    <input type="text" class="form-control" placeholder="Enter Kode" name="kode" id="kode" autocomplete="off" autofocus>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Nama Barang</label>
+                                            <div class="col-md-9">
+                                                <div class="input-icon right">
+                                                    <i class="fa"></i>
+                                                    <input type="text" class="form-control" placeholder="Enter Nama Barang" name="nama" id="nama" autocomplete="off">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Kategori</label>
@@ -74,8 +87,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Tipe</label>
@@ -91,6 +102,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Harga (Rp)</label>
@@ -102,8 +115,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">PPN (%)</label>
@@ -115,6 +126,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group form-md-line-input">
                                             <label class="col-md-3 control-label">Total (Rp)</label>
@@ -123,8 +136,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Upload Foto</label>
@@ -214,6 +225,18 @@ $(document).ready(function() {
         focusInvalid: false,
         ignore: "",
         rules: { 
+            kode: {
+                required: true, maxlength:5,
+                remote: {
+                    url: "<?=site_url('admin/barang/register_kode_exists');?>",
+                    type: "post",
+                    data: {
+                        kode: function() { 
+                            return $("#kode").val(); 
+                        }
+                    }
+                }
+            },
             nama: {
                 required: true,
                 remote: {
@@ -231,6 +254,7 @@ $(document).ready(function() {
             harga: { required: true }
         },
         messages: {
+            kode: { required:'Kode Barang harus diisi', maxlength:'Maksimal 5 Karakter', remote: 'Kode Barang sudah Ada' },
             nama: { required:'Nama Barang harus diisi', remote: 'Nama Barang sudah Ada' },
             lstKategori: { required:'Kategori harus dipilih' },
             lstTipe: { required:'Tipe harus dipilih' },

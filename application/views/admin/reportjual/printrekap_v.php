@@ -77,14 +77,14 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
             <th width="3%" style="border-top: 0.5px solid black; border-left: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">NO</th>
             <th width="42%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">NO. FAKTUR</th>
             <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">TANGGAL</th>
-            <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">NETTO</th>
+            <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">BRUTO</th>
             <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">DISKON</th>
             <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">DISKON POIN</th>
             <th width="15%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">TOTAL</th>
         </tr>
         <?php 
         $no          = 1;
-        $totalnetto  = 0;
+        $totalbruto  = 0;
         $totaldiskon = 0;
         $totalpoin   = 0;
         $total       = 0;
@@ -98,13 +98,13 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
             <td align="center" style="border-top: 0.5px solid black; border-left: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"></td>
             <td style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=$r->penjualan_no;?></td>
             <td align="center" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=date('d-m-Y', strtotime($r->penjualan_tanggal));?></td>
-            <td align="right" width="8" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($r->penjualan_netto,0,'',',');?></td>
+            <td align="right" width="8" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($r->penjualan_subtotal,0,'',',');?></td>
             <td align="right" width="8" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($r->penjualan_diskon,0,'',',');?></td>
             <td align="right" width="8" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($r->penjualan_tukar_poin_rp,0,'',',');?></td>
             <td align="right" width="8" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($r->penjualan_total,0,'',',');?></td>
         </tr>
         <?php
-            $totalnetto  = ($totalnetto+$r->penjualan_netto);
+            $totalbruto  = ($totalbruto+$r->penjualan_subtotal);
             $totaldiskon = ($totaldiskon+$r->penjualan_diskon);
             $totalpoin   = ($totalpoin+$r->penjualan_tukar_poin_rp);
             $total       = ($total+$r->penjualan_total);
@@ -113,7 +113,7 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
         ?>
         <tr>
             <td colspan="3" align="center" style="border-left: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><b>TOTAL</b></td>
-            <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($totalnetto,0,'',',');?></b></td>
+            <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($totalbruto,0,'',',');?></b></td>
             <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($totaldiskon,0,'',',');?></b></td>
             <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($totalpoin,0,'',',');?></b></td>
             <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($total,0,'',',');?></b></td>

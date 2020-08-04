@@ -110,7 +110,7 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
         ?>
         <tr>
             <td colspan="6" align="right"><b>SUB TOTAL :</b></td>
-            <td align="right" style="border-bottom: 0.5px dotted black;"><b><?=number_format($r->penjualan_netto,0,'',',');?></b></td>
+            <td align="right" style="border-bottom: 0.5px dotted black;"><b><?=number_format($r->penjualan_subtotal,0,'',',');?></b></td>
         </tr>
         <tr>
             <td colspan="6" align="right"><b>Diskon :</b></td>

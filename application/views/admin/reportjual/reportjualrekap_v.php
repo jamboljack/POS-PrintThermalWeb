@@ -55,7 +55,7 @@
                                     <th width="10%">Tanggal</th>
                                     <th width="10%">ID Pelanggan</th>
                                     <th>Pelanggan</th>
-                                    <th width="10%">Netto</th>
+                                    <th width="10%">Bruto</th>
                                     <th width="10%">Diskon</th>
                                     <th width="10%">Diskon POIN</th>
                                     <th width="10%">Total</th>

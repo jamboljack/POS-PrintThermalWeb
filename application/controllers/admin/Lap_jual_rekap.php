@@ -30,7 +30,7 @@ class Lap_jual_rekap extends MY_Controller
             $row[]  = date('d-m-Y', strtotime($r->penjualan_tanggal));
             $row[]  = $r->pelanggan_nomor;
             $row[]  = $r->pelanggan_nama;
-            $row[]  = number_format($r->penjualan_netto, 0, '', ',');
+            $row[]  = number_format($r->penjualan_subtotal, 0, '', ',');
             $row[]  = number_format($r->penjualan_diskon, 0, '', ',');
             $row[]  = number_format($r->penjualan_tukar_poin_rp, 0, '.', ',');
             $row[]  = number_format($r->penjualan_total, 0, '', ',');

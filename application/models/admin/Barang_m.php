@@ -95,7 +95,8 @@ class Barang_m extends CI_Model
         $kode = $this->getkodeurut();
         if (!empty($_FILES['foto']['name'])) {
             $data = array(
-                'barang_kode'   => $kode,
+                // 'barang_kode'   => $kode,
+                'barang_kode'   => strtoupper(trim(stripHTMLtags($this->input->post('kode', 'true')))),
                 'barang_nama'   => strtoupper(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'barang_seo'    => seo_title(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'kategori_id'   => trim($this->input->post('lstKategori', 'true')),
@@ -109,7 +110,8 @@ class Barang_m extends CI_Model
             );
         } else {
             $data = array(
-                'barang_kode'   => $kode,
+                // 'barang_kode'   => $kode,
+                'barang_kode'   => strtoupper(trim(stripHTMLtags($this->input->post('kode', 'true')))),
                 'barang_nama'   => strtoupper(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'barang_seo'    => seo_title(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'kategori_id'   => trim($this->input->post('lstKategori', 'true')),
@@ -130,6 +132,7 @@ class Barang_m extends CI_Model
         $barang_id = $this->input->post('id', 'true');
         if (!empty($_FILES['foto']['name'])) {
             $data = array(
+                'barang_kode'   => strtoupper(trim(stripHTMLtags($this->input->post('kode', 'true')))),
                 'barang_nama'   => strtoupper(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'barang_seo'    => seo_title(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'kategori_id'   => trim($this->input->post('lstKategori', 'true')),
@@ -143,6 +146,7 @@ class Barang_m extends CI_Model
             );
         } else {
             $data = array(
+                'barang_kode'   => strtoupper(trim(stripHTMLtags($this->input->post('kode', 'true')))),
                 'barang_nama'   => strtoupper(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'barang_seo'    => seo_title(trim(stripHTMLtags($this->input->post('nama', 'true')))),
                 'kategori_id'   => trim($this->input->post('lstKategori', 'true')),

@@ -6,9 +6,9 @@ class Lap_jual_rekap_m extends CI_Model
 {
     public $table        = 'v_penjualan';
     public $column_order = array(null, 'penjualan_no', 'penjualan_tanggal', 'pelanggan_nomor', 'pelanggan_nama',
-        'penjualan_netto', 'penjualan_diskon', 'penjualan_tukar_poin_rp', 'penjualan_total');
+        'penjualan_bruto', 'penjualan_diskon', 'penjualan_tukar_poin_rp', 'penjualan_total');
     public $column_search = array('penjualan_no', 'penjualan_tanggal', 'pelanggan_nomor', 'pelanggan_nama',
-        'penjualan_netto', 'penjualan_diskon', 'penjualan_tukar_poin_rp', 'penjualan_total');
+        'penjualan_bruto', 'penjualan_diskon', 'penjualan_tukar_poin_rp', 'penjualan_total');
     public $order = array('penjualan_id' => 'asc');
 
     public function __construct()

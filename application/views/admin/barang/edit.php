@@ -51,11 +51,24 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
+                                            <label class="col-md-3 control-label">Kode</label>
+                                            <div class="col-md-5">
+                                                <div class="input-icon right">
+                                                    <i class="fa"></i>
+                                                    <input type="text" class="form-control" placeholder="Enter Kode" name="kode" autocomplete="off" value="<?=$detail->barang_kode;?>" autofocus>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
                                             <label class="col-md-3 control-label">Nama Barang</label>
                                             <div class="col-md-9">
                                                 <div class="input-icon right">
                                                     <i class="fa"></i>
-                                                    <input type="text" class="form-control" placeholder="Enter Nama Barang" name="nama" id="nama" autocomplete="off" value="<?=$detail->barang_nama;?>" autofocus>
+                                                    <input type="text" class="form-control" placeholder="Enter Nama Barang" name="nama" id="nama" autocomplete="off" value="<?=$detail->barang_nama;?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -232,11 +245,13 @@ $(document).ready(function() {
         focusInvalid: false,
         ignore: "",
         rules: { 
+            kode: { required: true, maxlength:5 },
             nama: { required: true },
             lstKategori: { required: true },
             harga: { required: true }
         },
         messages: {
+            kode: { required:'Kode Barang harus diisi', maxlength:'Maksimal 5 Karakter' },
             nama: { required:'Nama Barang harus diisi' },
             lstKategori: { required:'Kategori harus dipilih' },
             harga: { required:'Harga harus diisi' }

@@ -199,7 +199,9 @@ function printNota(penjualan_id) {
                         var DiskonPOIN = formatter.format(datap1.penjualan_tukar_poin_rp);
                         var PPN        = formatter.format(datap1.penjualan_ppn);
                         var Total      = formatter.format(datap1.penjualan_total);
-                        Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
+                        var Bayar      = formatter.format(datap1.penjualan_bayar);
+                        var Kembali    = formatter.format(datap1.penjualan_kembali);
+                        Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total, Bayar, Kembali);
                         FooterEnd();
 
 
@@ -240,7 +242,9 @@ function printNota(penjualan_id) {
                                             var DiskonPOIN = formatter.format(datap2.penjualan_tukar_poin_rp);
                                             var PPN        = formatter.format(datap2.penjualan_ppn);
                                             var Total      = formatter.format(datap2.penjualan_total);
-                                            Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total);
+                                            var Bayar      = formatter.format(datap2.penjualan_bayar);
+                                            var Kembali    = formatter.format(datap2.penjualan_kembali);
+                                            Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total, Bayar, Kembali);
                                             FooterEnd();
 
                                             // Cetak ke 3
@@ -367,13 +371,15 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
     })
 }
 
-function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
+function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total, Bayar, Kembali) {
     var limitNominal    = 9;
     var txtSubTotal     = 0;
     var txtDiskon       = 0;
     var txtDiskonPOIN   = 0;
     var txtPPN          = 0;
     var txtTotal        = 0;
+    var txtBayar        = 0;
+    var txtKembali      = 0;
 
     if (SubTotal.length <= limitNominal) {
         txtSubTotal = SubTotal.padStart(limitNominal, ' ')
@@ -403,6 +409,18 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         txtTotal = Total.padStart(limitNominal, ' ')
     } else {
         txtTotal = Total.substring(0, limitNominal);
+    }
+
+    if (Bayar.length <= limitNominal) {
+        txtBayar = Bayar.padStart(limitNominal, ' ')
+    } else {
+        txtBayar = Bayar.substring(0, limitNominal);
+    }
+
+    if (Kembali.length <= limitNominal) {
+        txtKembali = Kembali.padStart(limitNominal, ' ')
+    } else {
+        txtKembali = Kembali.substring(0, limitNominal);
     }
 
     printer.open().then(function () {
@@ -442,11 +460,18 @@ function Footer(TipeBayar, SubTotal, Diskon, DiskonPOIN, PPN, Total) {
         .text("--------------------------------")
         .print()
     })
+    printer.open().then(function () {
+        printer.align('left')
+        .text("               Bayar : "+txtBayar)
+        .text("             Kembali : "+txtKembali)
+        .text("--------------------------------")
+        .print()
+    })
 }
 
 function FooterEnd() {
     printer.open().then(function () {
-        printer.align('left')
+        printer.align('center')
         .text('<?=$dataMeta->meta_footer;?>')
         .feed(3)
         .cut()

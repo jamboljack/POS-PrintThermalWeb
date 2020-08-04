@@ -64,6 +64,28 @@ class Barang extends MY_Controller
         $this->template->display('admin/barang/add', $data);
     }
 
+    private function kode_exists($kode)
+    {
+        $this->db->where('barang_kode', $kode);
+        $query = $this->db->get('vivo_barang');
+        if ($query->num_rows() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function register_kode_exists()
+    {
+        if (array_key_exists('kode', $_POST)) {
+            if ($this->kode_exists(stripHTMLtags($this->input->post('kode', 'true'))) == true) {
+                echo json_encode(false);
+            } else {
+                echo json_encode(true);
+            }
+        }
+    }
+
     private function nama_exists($nama)
     {
         $this->db->where('barang_nama', $nama);
