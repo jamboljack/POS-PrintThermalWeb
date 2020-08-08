@@ -190,7 +190,7 @@ function printNota(penjualan_id) {
                             var Harga      = formatter.format(dataitem1[i].penjualan_detail_harga);
                             var Qty        = formatter.format(dataitem1[i].penjualan_detail_qty);
                             var Subtotal   = formatter.format(dataitem1[i].penjualan_detail_subtotal);
-                            ListItem(NamaBarang, Harga, Qty, Subtotal);
+                            ListItem(NamaBarang, Qty, Subtotal);
                         }
 
                         var TipeBayar  = datap1.tipe_nama;
@@ -233,7 +233,7 @@ function printNota(penjualan_id) {
                                                 var Harga      = formatter.format(dataitem2[i].penjualan_detail_harga);
                                                 var Qty        = formatter.format(dataitem2[i].penjualan_detail_qty);
                                                 var Subtotal   = formatter.format(dataitem2[i].penjualan_detail_subtotal);
-                                                ListItem(NamaBarang, Harga, Qty, Subtotal);
+                                                ListItem(NamaBarang, Qty, Subtotal);
                                             }
 
                                             var TipeBayar  = datap2.tipe_nama;
@@ -330,9 +330,9 @@ function Header(NoOrder, Tanggal, Jam, NamaPelanggan, Kasir, Meja) {
     })
 }
 
-function ListItem(NamaBarang, Harga, Qty, Subtotal) {
-    var limitNamaBarang = 11;
-    var limitHarga      = 7;
+function ListItem(NamaBarang, Qty, Subtotal) {
+    var limitNamaBarang = 19;
+    // var limitHarga      = 7;
     var limitQty        = 3;
     var limitSubtotal   = 9;
     var txtBarang       = '';
@@ -346,11 +346,11 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
         txtBarang = NamaBarang.substring(0, limitNamaBarang);
     }
 
-    if (Harga.length <= limitHarga) {
-        txtHarga = Harga.padStart(limitHarga, ' ')
-    } else {
-        txtHarga = Harga.substring(0, limitHarga);
-    }
+    // if (Harga.length <= limitHarga) {
+    //     txtHarga = Harga.padStart(limitHarga, ' ')
+    // } else {
+    //     txtHarga = Harga.substring(0, limitHarga);
+    // }
 
     if (Qty.length <= limitQty) {
         txtQty = Qty.padStart(limitQty, ' ')
@@ -366,7 +366,7 @@ function ListItem(NamaBarang, Harga, Qty, Subtotal) {
 
     printer.open().then(function () {
       printer.align('left')
-        .text(txtBarang+" "+txtHarga+" "+txtQty+""+txtSubtotal)
+        .text(txtBarang+" "+txtQty+""+txtSubtotal)
         .print()
     })
 }
@@ -480,9 +480,9 @@ function FooterEnd() {
 }
 
 function ListItemChecker(NamaBarang, Qty, Keterangan) {
-    var limitNamaBarang = 11;
+    var limitNamaBarang = 16;
     var limitQty        = 3;
-    var limitKeterangan = 16;
+    var limitKeterangan = 11;
     var txtBarang       = '';
     var txtQty          = 0;
     var txtKeterangan   = '';
