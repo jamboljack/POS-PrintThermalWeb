@@ -80,15 +80,14 @@ class Lap_jual_barang extends MY_Controller
         echo json_encode($data);
     }
 
-    public function printbarang($dari = 'all', $sampai = 'all', $barang = 'all')
+    public function printbarang($dari, $sampai)
     {
         $data['header'] = $this->db->get_where('vivo_contact', array('contact_id' => 1))->row();
-        if ($barang != 'all') {
-            $data['listData'] = $this->db->order_by('barang_nama', 'asc')->get_where('v_barang', array('barang_id' => $barang))->result();
-        } else {
-            $data['listData'] = $this->db->order_by('barang_nama', 'asc')->get('v_barang')->result();
-        }
-
+        // if ($barang != 'all') {
+        //     $data['listData'] = $this->db->order_by('kategori_nama', 'asc')->get_where('v_barang', array('barang_id' => $barang))->result();
+        // } else {
+        $data['listData'] = $this->db->order_by('kategori_nama', 'asc')->get('vivo_kategori')->result();
+        // }
         $this->load->view('admin/reportjual/printbarang_v', $data);
     }
 }

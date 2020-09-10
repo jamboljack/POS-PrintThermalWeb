@@ -6,7 +6,6 @@
 <title>Print Rekap Penjualan</title>
 <style type="text/css">
     table {
-        width: 100%;
         border-collapse: collapse;
     }
     
@@ -117,6 +116,44 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
             <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($totaldiskon,0,'',',');?></b></td>
             <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($totalpoin,0,'',',');?></b></td>
             <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($total,0,'',',');?></b></td>
+        </tr>
+    </table>
+    <br>
+    <table width="50%" border="1" cellpadding="2" cellspacing="2">
+        <tr>
+            <th width="5%">NO</th>
+            <th width="50%">TIPE BAYAR</th>
+            <th width="45%">TOTAL</th>
+        </tr>
+        <?php 
+        $tgl_dari    = date('Y-m-d', strtotime($this->uri->segment(4)));
+        $tgl_sampai  = date('Y-m-d', strtotime($this->uri->segment(5)));
+        $pelanggan   = $this->uri->segment(6);
+        $no          = 1;
+        $total       = 0;
+        foreach($listTipe as $r) {
+            $tipe_id  = $r->tipe_id;
+            if ($pelanggan == 'all') {
+                $dataTotal = $this->db->select_sum('penjualan_total', 'total')->get_where('v_penjualan', array('penjualan_tanggal >=' => $tgl_dari, 'penjualan_tanggal <=' => $tgl_sampai, 'tipe_id' => $tipe_id))->row();
+            } else {
+                $dataTotal = $this->db->select_sum('penjualan_total', 'total')->get_where('v_penjualan', array('penjualan_tanggal >=' => $tgl_dari, 'penjualan_tanggal <=' => $tgl_sampai, 'tipe_id' => $tipe_id, 'pelanggan_id' => $pelanggan))->row();
+            }
+
+
+        ?>
+        <tr>
+            <td align="center"><?=$no;?></td>
+            <td><?=$r->tipe_nama;?></td>
+            <td align="right"><?=number_format($dataTotal->total,0,'',',');?></td>
+        </tr>
+        <?php 
+            $total = ($total+$dataTotal->total);
+            $no++;
+        } 
+        ?>
+        <tr>
+            <td colspan="2" align="center">TOTAL</td>
+            <td align="right"><?=number_format($total,0,'',',');?></td>
         </tr>
     </table>
 </div>

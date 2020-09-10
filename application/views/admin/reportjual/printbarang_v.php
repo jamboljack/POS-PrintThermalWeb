@@ -55,6 +55,11 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
     $periode = '';
 }
 
+$dari       = $this->uri->segment(4);
+$sampai     = $this->uri->segment(5);
+$barang_id  = $this->uri->segment(6);
+$tgl_dari   = date('Y-m-d', strtotime($dari));
+$tgl_sampai = date('Y-m-d', strtotime($sampai));
 ?>
 <div class="page">
     <table width="100%" align="center" cellpadding="0" cellspacing="0">
@@ -72,63 +77,83 @@ if ($this->uri->segment(4) != 'all' && $this->uri->segment(5) != 'all') {
         </tr>
     </table>
     <br>
-    <table width="100%">
+    <table cellpadding="2" cellspacing="2" border="1">
         <tr>
-            <th width="3%" style="border-top: 0.5px solid black; border-left: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">NO</th>
-            <th width="20%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">NO. FAKTUR</th>
-            <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">TANGGAL</th>
-            <th width="30%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">PELANGGAN</th>
-            <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">JUMLAH</th>
-            <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">HARGA</th>
-            <th width="7%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">DISC (%)</th>
-            <th width="10%" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;">TOTAL</th>
+            <th width="3%">NO</th>
+            <th width="10%">KODE</th>
+            <th width="40%">NAMA BARANG</th>
+            <th width="10%">QTY</th>
+            <th width="10%">HARGA</th>
+            <th width="10%">SUB TOTAL</th>
+            <th width="7%">DISC (%)</th>
+            <th width="10%">TOTAL</th>
         </tr>
         <?php 
+        $totalfootqty = 0;
+        $totalfootsub = 0;
+        $totalfootdis = 0;
+        $totalfoot    = 0;
         foreach($listData as $r) { 
-            $barang_id = $r->barang_id;
-            $dari       = $this->uri->segment(4);
-            $sampai     = $this->uri->segment(5);
-            if ($dari != 'all' && $sampai != 'all') {
-                $tgl_dari         = date('Y-m-d', strtotime($dari));
-                $tgl_sampai       = date('Y-m-d', strtotime($sampai));
-                $listDetail = $this->db->order_by('penjualan_tanggal', 'asc')->get_where('v_penjualan_detail', array('penjualan_tanggal >=' => $tgl_dari, 'penjualan_tanggal <=' => $tgl_sampai, 'barang_id' => $barang_id))->result();
-            } else {
-                $listDetail = $this->db->order_by('penjualan_tanggal', 'asc')->get_where('v_penjualan_detail', array('barang_id' => $barang_id))->result();
-            }
-
+            $kategori_id = $r->kategori_id;
+            $listDetail  = $this->db->group_by('barang_id')->get_where('v_penjualan_detail', array('kategori_id' => $kategori_id, 'penjualan_tanggal >=' => $tgl_dari, 'penjualan_tanggal <=' => $tgl_sampai))->result();
             if (count($listDetail) > 0) {
         ?>
         <tr>
-            <th align="left" colspan="8" style="border-left: 0.5px solid black; border-right: 0.5px solid black;"><?=$r->barang_kode.' - '.$r->barang_nama;?></th>
+            <th colspan="8" style="border-left: 0.5px solid black; border-right: 0.5px solid black;"><?=$r->kategori_nama;?></th>
         </tr>
         <?php
-            $no    = 1;
-            $total = 0;
+            $no       = 1;
+            $totalqty = 0;
+            $totalsub = 0;
+            $totaldis = 0;
+            $total    = 0;
             foreach($listDetail as $d) {
+                $barang_id = $d->barang_id;
+                $dataSUM   = $this->db->select_sum('penjualan_detail_qty', 'qty')->select_sum('penjualan_detail_disc_rp', 'diskon')->select_sum('penjualan_detail_subtotal', 'total')->get_where('v_penjualan_detail', array('barang_id' => $barang_id, 'penjualan_tanggal >=' => $tgl_dari, 'penjualan_tanggal <=' => $tgl_sampai))->row();
+                $subtotal = ($dataSUM->qty*$d->penjualan_detail_harga);
         ?>
         <tr>
-            <td align="center" style="border-top: 0.5px solid black; border-left: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=$no;?></td>
-            <td style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=$d->penjualan_no;?></td>
-            <td align="center" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=date('d-m-Y', strtotime($d->penjualan_tanggal));?></td>
-            <td style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=$d->pelanggan_nama;?></td>
-            <td align="center" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($d->penjualan_detail_qty,0,'.',',');?></td>
-            <td align="right" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($d->penjualan_detail_harga,0,'',',');?></td>
-            <td align="right" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($d->penjualan_detail_disc,2,'.',',');?></td>
-            <td align="right" style="border-top: 0.5px solid black; border-bottom: 0.5px solid black; border-right: 0.5px solid black;"><?=number_format($d->penjualan_detail_subtotal,0,'',',');?></td>
+            <td align="center"><?=$no;?></td>
+            <td><?=$d->penjualan_detail_kode;?></td>
+            <td><?=$d->penjualan_detail_nama;?></td>
+            <td align="center"><?=number_format($dataSUM->qty,0,'',',');?></td>
+            <td align="right"><?=number_format($d->penjualan_detail_harga,0,'',',');?></td>
+            <td align="right"><?=number_format($subtotal,0,'',',');?></td>
+            <td align="right"><?=number_format($dataSUM->diskon,0,'',',');?></td>
+            <td align="right"><?=number_format($dataSUM->total,0,'',',');?></td>
         </tr>
-        <?php
-            $total = ($total+$d->penjualan_detail_subtotal);
-            $no++; 
+        <?php   
+                $totalqty = ($totalqty+$dataSUM->qty);
+                $totalsub = ($totalsub+$subtotal);
+                $totaldis = ($totaldis+$dataSUM->diskon);
+                $total    = ($total+$dataSUM->total);
+                $no++;
             }
         ?>
         <tr>
-            <td colspan="7" align="right" style="border-left: 0.5px solid black; border-bottom: 0.5px solid black;"><b>TOTAL :</b></td>
-            <td align="right" style="border-right: 0.5px solid black; border-bottom: 0.5px solid black;"><b><?=number_format($total,0,'',',');?></b></td>
-        </tr>
+            <td colspan="3" align="center"><b>SUB TOTAL : <?=$r->kategori_nama;?></b></td>
+            <td align="center"><b><?=number_format($totalqty,0,'',',');?></b></td>
+            <td></td>
+            <td align="right"><b><?=number_format($totalsub,0,'',',');?></b></td>
+            <td align="right"><b><?=number_format($totaldis,0,'',',');?></b></td>
+            <td align="right"><b><?=number_format($total,0,'',',');?></b></td>
+        </tr>        
         <?php
+                $totalfootqty = ($totalfootqty+$totalqty);
+                $totalfootsub = ($totalfootsub+$totalsub);
+                $totalfootdis = ($totalfootdis+$totaldis);
+                $totalfoot    = ($totalfoot+$total);
             }
         } 
         ?>
+        <tr>
+            <td colspan="3" align="center"><b>TOTAL</b></td>
+            <td align="center"><b><?=number_format($totalfootqty,0,'',',');?></b></td>
+            <td></td>
+            <td align="right"><b><?=number_format($totalfootsub,0,'',',');?></b></td>
+            <td align="right"><b><?=number_format($totalfootdis,0,'',',');?></b></td>
+            <td align="right"><b><?=number_format($totalfoot,0,'',',');?></b></td>
+        </tr> 
     </table>
 </div>
 </body>

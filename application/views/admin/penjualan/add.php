@@ -174,7 +174,7 @@
                                     <div class="col-md-1">
                                         <div class="form-group">
                                             <label>Disc (%)</label>
-                                            <input type="text" placeholder="0.00" class="form-control digit" name="disc" id="disc" onkeyup="hitungSubTotal()" disabled>
+                                            <input type="text" placeholder="0.00" class="form-control digit" name="disc" id="disc" onkeyup="hitungSubTotal()" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -409,7 +409,8 @@ $('#kode_barang').keydown(function (e) {
                         $('#disc').val(disc_pelanggan);
                         $('#total').val(formatter.format(data.barang_total));
                         document.formBarang.qty.disabled=false;
-                        document.formBarang.disc.disabled=false;
+                        $("#disc").prop('readonly', false);
+                        // $("#harga").prop('readonly', false);
                         document.formBarang.btn_item.disabled=false;
                         $("#btn_reset").attr("disabled", false);
                         hitungSubTotal();
@@ -444,7 +445,8 @@ function pilihData(id) {
             $('#disc').val(disc_pelanggan);
             $('#total').val(formatter.format(data.barang_total));
             document.formBarang.qty.disabled=false;
-            document.formBarang.disc.disabled=false;
+            $("#disc").prop('readonly', false);
+            // $("#harga").prop('readonly', false);
             document.formBarang.btn_item.disabled=false;
             $("#btn_reset").attr("disabled", false);
             $('#formDataBarang').modal('hide');
@@ -500,7 +502,8 @@ function resetForm() {
     $('#total').val('');
     $('#keterangan').val('');
     document.formBarang.qty.disabled=true;
-    document.formBarang.disc.disabled=true;
+    $("#disc").prop('readonly', true);
+    // $("#harga").prop('readonly', true);
     $("#btn_item").attr("disabled", true);
     $("#btn_reset").attr("disabled", true);
     $("#btn_bayar").attr("disabled", false);
@@ -629,8 +632,6 @@ function hitungTotal() {
             $('#totalpenjualan').val(TotalJual);
             $('#bayar_subtotal').val(Total);
             $('#totalinvoice').text('Rp. '+Total);
-            // $('#totalpenjualan').val(TotalJual);
-            // $('#bayar_total').val(formatter.format(TotalJual));
 
             var PPNJual     = '<?=$dataMeta->meta_ppn;?>';
             var PPN         = 0;
@@ -676,8 +677,8 @@ function editData(id) {
             $('#total').val(formatter.format(data.penjualan_temp_subtotal));
             $('#keterangan').val(data.penjualan_temp_keterangan);
             document.formBarang.qty.disabled=false;
-            document.formBarang.disc.disabled=false;
-            document.formBarang.harga.disabled=false;
+            $("#disc").prop('readonly', false);
+            // $("#harga").prop('readonly', false);
             document.formBarang.btn_item.disabled=false;
             $("#btn_reset").attr("disabled", false);
             $('#kode_barang').focus();
@@ -747,8 +748,8 @@ function resetFormJual() {
     $('#BayarError').hide();
 
     document.formBarang.qty.disabled=true;
-    document.formBarang.disc.disabled=true;
-    document.formBarang.harga.disabled=true;
+    $("#disc").prop('readonly', true);
+    // $("#harga").prop('readonly', true);
     document.formBarang.btn_item.disabled=false;
     $("#btn_bayar").attr("disabled", true);
     $("#btn_reset").attr("disabled", true);

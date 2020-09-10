@@ -3,8 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Penjualan_m extends CI_Model
 {
-    public $table         = 'v_penjualan';
-    public $column_order  = array(null, null, 'penjualan_no', 'penjualan_tanggal', 'pelanggan_nama', 'meja_nama', 'user_name', 
+    public $table        = 'v_penjualan';
+    public $column_order = array(null, null, 'penjualan_no', 'penjualan_tanggal', 'pelanggan_nama', 'meja_nama', 'user_name',
         'penjualan_subtotal', 'penjualan_diskon', 'penjualan_total');
     public $column_search = array('penjualan_no', 'penjualan_tanggal', 'pelanggan_nama', 'meja_nama', 'user_name');
     public $order         = array('penjualan_no' => 'desc');
@@ -359,46 +359,46 @@ class Penjualan_m extends CI_Model
         $barang_id    = $this->input->post('barang_id', 'true');
         $checkData    = $this->db->get_where('vivo_penjualan_temp', array('barang_id' => $barang_id, 'pelanggan_id' => $pelanggan_id, 'user_username' => $username))->row();
         $dataBarang   = $this->db->get_where('vivo_barang', array('barang_id' => $barang_id))->row();
-        if (count($checkData) == 0) {
-            $data = array(
-                'pelanggan_id'              => $pelanggan_id,
-                'meja_id'                   => $this->input->post('lstMeja', 'true'),
-                'barang_id'                 => $barang_id,
-                'penjualan_temp_kode'       => $dataBarang->barang_kode,
-                'penjualan_temp_nama'       => $dataBarang->barang_nama,
-                'penjualan_temp_harga'      => intval(str_replace(",", "", $this->input->post('harga', 'true'))),
-                'penjualan_temp_ppn'        => $dataBarang->barang_ppn,
-                'penjualan_temp_ppn_rp'     => $dataBarang->barang_ppn_rp,
-                'penjualan_temp_qty'        => intval(str_replace(",", "", $this->input->post('qty', 'true'))),
-                'penjualan_temp_disc'       => $this->input->post('disc', 'true'),
-                'penjualan_temp_disc_rp'    => $this->input->post('disc_rupiah', 'true'),
-                'penjualan_temp_subtotal'   => intval(str_replace(",", "", $this->input->post('total', 'true'))),
-                'penjualan_temp_keterangan' => strtoupper($this->input->post('keterangan', 'true')),
-                'user_username'             => $username,
-                'penjualan_temp_update'     => date('Y-m-d H:i:s'),
-            );
+        // if (count($checkData) == 0) {
+        $data = array(
+            'pelanggan_id'              => $pelanggan_id,
+            'meja_id'                   => $this->input->post('lstMeja', 'true'),
+            'barang_id'                 => $barang_id,
+            'penjualan_temp_kode'       => $dataBarang->barang_kode,
+            'penjualan_temp_nama'       => $dataBarang->barang_nama,
+            'penjualan_temp_harga'      => str_replace(",", "", $this->input->post('harga', 'true')),
+            'penjualan_temp_ppn'        => $dataBarang->barang_ppn,
+            'penjualan_temp_ppn_rp'     => $dataBarang->barang_ppn_rp,
+            'penjualan_temp_qty'        => intval(str_replace(",", "", $this->input->post('qty', 'true'))),
+            'penjualan_temp_disc'       => $this->input->post('disc', 'true'),
+            'penjualan_temp_disc_rp'    => $this->input->post('disc_rupiah', 'true'),
+            'penjualan_temp_subtotal'   => intval(str_replace(",", "", $this->input->post('total', 'true'))),
+            'penjualan_temp_keterangan' => strtoupper($this->input->post('keterangan', 'true')),
+            'user_username'             => $username,
+            'penjualan_temp_update'     => date('Y-m-d H:i:s'),
+        );
 
-            $this->db->insert('vivo_penjualan_temp', $data);
-        } else {
-            $harga    = intval(str_replace(",", "", $this->input->post('harga', 'true')));
-            $jumlah   = intval(str_replace(",", "", $this->input->post('qty', 'true')));
-            $discbaru = $this->input->post('disc', 'true');
-            $qty      = ($checkData->penjualan_temp_qty + $jumlah);
-            $disc     = ($checkData->penjualan_temp_disc + $discbaru);
-            $discrp   = ((($harga * $qty) * $disc) / 100);
-            $total    = (($harga * $qty) - $discrp);
-            $data     = array(
-                'penjualan_temp_harga'    => intval(str_replace(",", "", $this->input->post('harga', 'true'))),
-                'penjualan_temp_qty'      => $qty,
-                'penjualan_temp_disc'     => $disc,
-                'penjualan_temp_disc_rp'  => $discrp,
-                'penjualan_temp_subtotal' => $total,
-            );
+        $this->db->insert('vivo_penjualan_temp', $data);
+        // } else {
+        //     $harga    = intval(str_replace(",", "", $this->input->post('harga', 'true')));
+        //     $jumlah   = intval(str_replace(",", "", $this->input->post('qty', 'true')));
+        //     $discbaru = $this->input->post('disc', 'true');
+        //     $qty      = ($checkData->penjualan_temp_qty + $jumlah);
+        //     $disc     = ($checkData->penjualan_temp_disc + $discbaru);
+        //     $discrp   = ((($harga * $qty) * $disc) / 100);
+        //     $total    = (($harga * $qty) - $discrp);
+        //     $data     = array(
+        //         'penjualan_temp_harga'    => intval(str_replace(",", "", $this->input->post('harga', 'true'))),
+        //         'penjualan_temp_qty'      => $qty,
+        //         'penjualan_temp_disc'     => $disc,
+        //         'penjualan_temp_disc_rp'  => $discrp,
+        //         'penjualan_temp_subtotal' => $total,
+        //     );
 
-            $this->db->where('pelanggan_id', $pelanggan_id);
-            $this->db->where('barang_id', $barang_id);
-            $this->db->update('vivo_penjualan_temp', $data);
-        }
+        //     $this->db->where('pelanggan_id', $pelanggan_id);
+        //     $this->db->where('barang_id', $barang_id);
+        //     $this->db->update('vivo_penjualan_temp', $data);
+        // }
     }
 
     public function update_data_item()
@@ -411,7 +411,7 @@ class Penjualan_m extends CI_Model
             'barang_id'                 => $barang_id,
             'penjualan_temp_kode'       => $dataBarang->barang_kode,
             'penjualan_temp_nama'       => $dataBarang->barang_nama,
-            'penjualan_temp_harga'      => intval(str_replace(",", "", $this->input->post('harga', 'true'))),
+            'penjualan_temp_harga'      => str_replace(",", "", $this->input->post('harga', 'true')),
             'penjualan_temp_ppn'        => $dataBarang->barang_ppn,
             'penjualan_temp_ppn_rp'     => $dataBarang->barang_ppn_rp,
             'penjualan_temp_qty'        => intval(str_replace(",", "", $this->input->post('qty', 'true'))),

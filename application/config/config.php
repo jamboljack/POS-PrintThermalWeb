@@ -380,7 +380,7 @@ $config['encryption_key'] = 'jdhfjdh643743JGHG&^%^$%$%$%';
  */
 $config['sess_driver']             = 'files';
 $config['sess_cookie_name']        = 'streetlounge_session';
-$config['sess_expiration']         = 7200;
+$config['sess_expiration']         = 15000;
 $config['sess_save_path']          = null;
 $config['sess_match_ip']           = false;
 $config['sess_time_to_update']     = 300;

@@ -64,6 +64,7 @@ class Lap_jual_rekap extends MY_Controller
             $data['listData'] = $this->db->order_by('penjualan_tanggal', 'asc')->get('v_penjualan')->result();
         }
 
+        $data['listTipe'] = $this->db->order_by('tipe_nama', 'asc')->get('vivo_tipe')->result();
         $this->load->view('admin/reportjual/printrekap_v', $data);
     }
 }
