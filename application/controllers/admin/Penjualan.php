@@ -7,7 +7,7 @@ class Penjualan extends MY_Controller
     {
         parent::__construct();
         $this->cek_auth_admin();
-        $this->load->library("EscPos");
+        // $this->load->library("EscPos");
         $this->load->library('template');
         $this->load->model('admin/penjualan_m');
     }
